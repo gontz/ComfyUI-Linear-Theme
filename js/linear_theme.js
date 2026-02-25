@@ -1231,8 +1231,10 @@ table td {
 
 /* -- Node / Group title inline editor -- */
 .node-title-editor {
-    background: rgba(20,20,23,0.95) !important;
+    background: rgb(20,20,23) !important;
     border-radius: 4px !important;
+    min-width: 300px !important;
+    box-sizing: border-box !important;
 }
 
 /* -- Editable text -- */
@@ -3036,6 +3038,209 @@ function stripNodeColor(node) {
     delete node.bgcolor;
 }
 
+/* ── Arrange selected nodes: straight main chain, sub-nodes below target ── */
+function arrangeSelectedNodes(selectedNodes) {
+    if (selectedNodes.length === 0) return;
+
+    const graph = comfyApp.graph;
+    const GRID = 10;
+    const H_GAP = 40;  // 4 dots horizontal
+    const V_GAP = 10;  // 1 dot vertical
+
+    const nodeSet = new Set(selectedNodes.map(n => n.id));
+    const nodeById = {};
+    for (const n of selectedNodes) nodeById[n.id] = n;
+
+    // --- 1. Topological depth (column index) ---
+    const depth = {};
+    const computing = new Set();
+
+    function getDepth(node) {
+        if (depth[node.id] !== undefined) return depth[node.id];
+        if (computing.has(node.id)) return 0;
+        computing.add(node.id);
+
+        let maxParentDepth = -1;
+        if (node.inputs) {
+            for (const input of node.inputs) {
+                if (input.link != null) {
+                    const linkInfo = graph.links[input.link];
+                    if (linkInfo && nodeSet.has(linkInfo.origin_id)) {
+                        const pd = getDepth(nodeById[linkInfo.origin_id]);
+                        if (pd > maxParentDepth) maxParentDepth = pd;
+                    }
+                }
+            }
+        }
+
+        depth[node.id] = maxParentDepth + 1;
+        computing.delete(node.id);
+        return depth[node.id];
+    }
+
+    for (const node of selectedNodes) getDepth(node);
+
+    // --- 1b. Find main path early (needed for depth reassignment) ---
+    function findMainPathEarly() {
+        const roots = selectedNodes.filter(n => depth[n.id] === 0);
+        let bestPath = [];
+
+        function dfs(node, path) {
+            path.push(node);
+            let extended = false;
+            if (node.outputs) {
+                for (const out of node.outputs) {
+                    if (out.links) {
+                        for (const linkId of out.links) {
+                            const linkInfo = graph.links[linkId];
+                            if (linkInfo && nodeSet.has(linkInfo.target_id)) {
+                                dfs(nodeById[linkInfo.target_id], path);
+                                extended = true;
+                            }
+                        }
+                    }
+                }
+            }
+            if (!extended && path.length > bestPath.length) {
+                bestPath = [...path];
+            }
+            path.pop();
+        }
+
+        for (const root of roots) dfs(root, []);
+        return new Set(bestPath.map(n => n.id));
+    }
+
+    const mainPathIds = findMainPathEarly();
+
+    // --- 1c. Reassign sub-node depths: place at min(target_depth) - 1 ---
+    // Places sub-nodes next to their EARLIEST target, not the latest
+    let changed = true;
+    while (changed) {
+        changed = false;
+        for (const node of selectedNodes) {
+            if (mainPathIds.has(node.id)) continue;
+            if (!node.outputs) continue;
+
+            // Find the MINIMUM target depth in selection
+            let minTargetDepth = Infinity;
+            for (const out of node.outputs) {
+                if (out.links) {
+                    for (const linkId of out.links) {
+                        const linkInfo = graph.links[linkId];
+                        if (linkInfo && nodeSet.has(linkInfo.target_id)) {
+                            if (depth[linkInfo.target_id] < minTargetDepth) {
+                                minTargetDepth = depth[linkInfo.target_id];
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (minTargetDepth !== Infinity) {
+                const newDepth = minTargetDepth - 1;
+                if (newDepth >= 0 && newDepth > depth[node.id]) {
+                    depth[node.id] = newDepth;
+                    changed = true;
+                }
+            }
+        }
+    }
+
+    // --- 2. Group by depth ---
+    const columns = {};
+    for (const node of selectedNodes) {
+        const d = depth[node.id];
+        if (!columns[d]) columns[d] = [];
+        columns[d].push(node);
+    }
+
+    // --- 3. Helpers ---
+    function getNodeSize(node) {
+        if (node.flags.collapsed) {
+            return [
+                node._collapsed_width || node.size[0],
+                LiteGraph.NODE_TITLE_HEIGHT || 30
+            ];
+        }
+        return [node.size[0], node.size[1]];
+    }
+
+    function findTarget(node) {
+        if (!node.outputs) return null;
+        let best = null;
+        let bestDepthDiff = Infinity;
+
+        for (const out of node.outputs) {
+            if (out.links) {
+                for (const linkId of out.links) {
+                    const linkInfo = graph.links[linkId];
+                    if (linkInfo && nodeSet.has(linkInfo.target_id)) {
+                        const target = nodeById[linkInfo.target_id];
+                        const dd = depth[target.id] - depth[node.id];
+                        if (dd < bestDepthDiff || (dd === bestDepthDiff && (!best || linkInfo.target_slot < best.slot))) {
+                            best = { node: target, slot: linkInfo.target_slot };
+                            bestDepthDiff = dd;
+                        }
+                    }
+                }
+            }
+        }
+        return best;
+    }
+
+    const snap = (v) => Math.round(v / GRID) * GRID;
+    const startX = Math.min(...selectedNodes.map(n => n.pos[0]));
+    const startY = Math.min(...selectedNodes.map(n => n.pos[1]));
+    const mainY = snap(startY);
+    const depths = Object.keys(columns).map(Number).sort((a, b) => a - b);
+
+    // --- 5. Compute X positions (left → right) ---
+    const columnX = {};
+    let curX = snap(startX);
+    for (const d of depths) {
+        columnX[d] = curX;
+        let maxW = 0;
+        for (const node of columns[d]) {
+            const [w] = getNodeSize(node);
+            if (w > maxW) maxW = w;
+        }
+        curX = snap(curX + maxW + H_GAP);
+    }
+
+    // --- DEBUG: log main path and columns ---
+    console.log(`[Arrange] mainY: ${mainY}`);
+    console.log(`[Arrange] Main path:`, [...mainPathIds].map(id => nodeById[id]?.title || nodeById[id]?.type || id));
+    for (const d of depths) {
+        console.log(`[Arrange] Col ${d}:`, columns[d].map(n => `${n.title || n.type} (${mainPathIds.has(n.id) ? 'MAIN' : 'sub'})`));
+    }
+
+    // --- 6. Place ALL nodes per column, sorted by target slot (slot 0 = top) ---
+    for (const d of depths) {
+        const col = columns[d];
+
+        // Sort all nodes by the slot they connect to on their target
+        col.sort((a, b) => {
+            const ta = findTarget(a);
+            const tb = findTarget(b);
+            const sa = ta ? ta.slot : -1; // no target = top (roots)
+            const sb = tb ? tb.slot : -1;
+            return sa - sb;
+        });
+
+        // Stack from mainY
+        let curY = snap(mainY);
+        for (const node of col) {
+            const [, h] = getNodeSize(node);
+            node.pos[0] = columnX[d];
+            node.pos[1] = curY;
+            curY = snap(curY + h + V_GAP);
+        }
+    }
+
+    comfyApp.canvas.setDirty(true, true);
+}
+
 comfyApp.registerExtension({
     name: "Comfy.LinearTheme",
     nodeCreated(node) {
@@ -3149,6 +3354,71 @@ comfyApp.registerExtension({
             };
         }
 
-        console.log("[LinearTheme] Theme applied — v2.2");
+        // --- Context menu: Linear Theme submenu (compact / collapse) ---
+        const origGetCanvasMenuOptions = LGraphCanvas.prototype.getCanvasMenuOptions;
+        LGraphCanvas.prototype.getCanvasMenuOptions = function (...args) {
+            const options = origGetCanvasMenuOptions.apply(this, args);
+            const selectedNodes = Object.values(this.selected_nodes || {});
+            const hasSelection = selectedNodes.length > 0;
+
+            options.push(null); // separator
+            options.push({
+                content: "Linear Theme",
+                has_submenu: true,
+                submenu: {
+                    options: [
+                        {
+                            content: "Compact Selected Nodes",
+                            disabled: !hasSelection,
+                            callback: () => {
+                                for (const node of selectedNodes) {
+                                    if (!node.flags.collapsed) {
+                                        const minSize = node.computeSize();
+                                        node.setSize(minSize);
+                                    }
+                                }
+                                comfyApp.canvas.setDirty(true, true);
+                            }
+                        },
+                        {
+                            content: "Collapse Selected Nodes",
+                            disabled: !hasSelection,
+                            callback: () => {
+                                for (const node of selectedNodes) {
+                                    if (!node.flags.collapsed) {
+                                        node.collapse();
+                                    }
+                                }
+                                comfyApp.canvas.setDirty(true, true);
+                            }
+                        },
+                        {
+                            content: "Arrange Selected Nodes",
+                            disabled: !hasSelection,
+                            callback: () => {
+                                arrangeSelectedNodes(selectedNodes);
+                            }
+                        },
+                        null, // separator
+                        {
+                            content: "Expand Selected Nodes",
+                            disabled: !hasSelection,
+                            callback: () => {
+                                for (const node of selectedNodes) {
+                                    if (node.flags.collapsed) {
+                                        node.collapse(); // toggles back
+                                    }
+                                }
+                                comfyApp.canvas.setDirty(true, true);
+                            }
+                        },
+                    ],
+                },
+            });
+
+            return options;
+        };
+
+        console.log("[LinearTheme] Theme applied — v2.3");
     }
 });
