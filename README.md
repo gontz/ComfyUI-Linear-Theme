@@ -8,6 +8,8 @@ Pure black canvas, glassmorphism bars, no shadows. Every pixel is intentional.
 
 ![Nodes close-up](screenshots/nodes-closeup.png)
 
+![Group colors](screenshots/group-colors.png)
+
 <p>
   <img src="screenshots/context-menu.png" width="280">
   <img src="screenshots/glassmorphism.png" width="60">
@@ -21,6 +23,7 @@ Pure black canvas, glassmorphism bars, no shadows. Every pixel is intentional.
 - **Theme Editor** — right-click → Linear Theme → Theme Editor to customize everything in real time
 - **Execution glow** — running nodes pulse white, completed flash green, errors flash red
 - **Collapsed titles** — full title always visible on collapsed nodes
+- **Styled groups** — muted color palette, LED dot badge, frosted glass effect, inner shadows
 - **Dot grid background** — clean minimal canvas grid
 - **Color palette** for LiteGraph canvas — nodes, links, slots
 - Loads automatically as a custom node extension

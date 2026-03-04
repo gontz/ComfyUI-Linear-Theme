@@ -4104,6 +4104,185 @@ function lockCollapsedWidth(node) {
     });
 }
 
+// ── Group color palette (Linear-style muted colors) ──
+const LINEAR_GROUP_COLORS = {
+    '#335':    { bg: '#2a2a2e', accent: '#a1a1aa' },   // default (no color) → zinc
+    '#8AA':    { bg: '#2d4a4a', accent: '#2dd4bf' },   // teal/cyan
+    '#A88':    { bg: '#4a2d2d', accent: '#f87171' },   // red/rose
+    '#b06634': { bg: '#4a3320', accent: '#fb923c' },   // brown/amber
+    '#8A8':    { bg: '#2d4a2d', accent: '#4ade80' },   // green/emerald
+    '#88A':    { bg: '#2d2d4a', accent: '#60a5fa' },   // blue
+    '#3f789e': { bg: '#1e3a4d', accent: '#38bdf8' },   // pale blue/sky
+    '#a1309b': { bg: '#3d1e3d', accent: '#c084fc' },   // purple
+    '#b58b2a': { bg: '#3d3520', accent: '#fbbf24' },   // yellow/gold
+};
+
+function _hexToRgb(hex) {
+    hex = hex.replace('#', '');
+    if (hex.length === 3) hex = hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];
+    return {
+        r: parseInt(hex.substring(0, 2), 16),
+        g: parseInt(hex.substring(2, 4), 16),
+        b: parseInt(hex.substring(4, 6), 16)
+    };
+}
+
+function installGroupOverride() {
+    if (!LGraphCanvas.prototype._origDrawGroups) {
+        LGraphCanvas.prototype._origDrawGroups = LGraphCanvas.prototype.drawGroups;
+    }
+
+    LGraphCanvas.prototype.drawGroups = function(canvas, ctx) {
+        if (!this.graph) return;
+        const groups = this.graph._groups;
+        if (!groups || groups.length === 0) return;
+
+        ctx.save();
+        const scale = this.ds?.scale || 1;
+
+        for (let i = 0; i < groups.length; i++) {
+            const group = groups[i];
+            if (!group) continue;
+
+            const pos = group._pos || group.pos;
+            const size = group._size || group.size;
+            if (!pos || !size) continue;
+
+            const rawColor = group.color || '#335';
+            const palette = LINEAR_GROUP_COLORS[rawColor] || { bg: rawColor, accent: rawColor };
+            const bgRgb = _hexToRgb(palette.bg);
+            const accentRgb = _hexToRgb(palette.accent);
+
+            const x = pos[0], y = pos[1], w = size[0], h = size[1];
+            const titleH = 34, r = 10, lineW = 1.5 / scale;
+
+            // ── Clipped region ──
+            ctx.save();
+            ctx.beginPath();
+            ctx.roundRect(x, y, w, h, r);
+            ctx.clip();
+
+            // Blur backdrop
+            ctx.filter = 'blur(8px)';
+            ctx.fillStyle = `rgba(${bgRgb.r}, ${bgRgb.g}, ${bgRgb.b}, 0.3)`;
+            ctx.fillRect(x - 10, y - 10, w + 20, h + 20);
+            ctx.filter = 'none';
+
+            // Frosted base
+            ctx.fillStyle = `rgba(${bgRgb.r}, ${bgRgb.g}, ${bgRgb.b}, 0.2)`;
+            ctx.fillRect(x, y, w, h);
+
+            // Diagonal gradient (texture)
+            const diagGrad = ctx.createLinearGradient(x, y, x + w, y + h);
+            diagGrad.addColorStop(0, 'rgba(255,255,255,0.025)');
+            diagGrad.addColorStop(0.5, 'rgba(255,255,255,0)');
+            diagGrad.addColorStop(1, 'rgba(255,255,255,0.015)');
+            ctx.fillStyle = diagGrad;
+            ctx.fillRect(x, y, w, h);
+
+            // Inner shadows (top light, bottom/right dark)
+            const innerTop = ctx.createLinearGradient(x, y, x, y + 20);
+            innerTop.addColorStop(0, 'rgba(255,255,255,0.04)');
+            innerTop.addColorStop(1, 'rgba(255,255,255,0)');
+            ctx.fillStyle = innerTop;
+            ctx.fillRect(x, y, w, 20);
+
+            const innerBot = ctx.createLinearGradient(x, y + h - 30, x, y + h);
+            innerBot.addColorStop(0, 'rgba(0,0,0,0)');
+            innerBot.addColorStop(1, 'rgba(0,0,0,0.15)');
+            ctx.fillStyle = innerBot;
+            ctx.fillRect(x, y + h - 30, w, 30);
+
+            const innerLeft = ctx.createLinearGradient(x, y, x + 15, y);
+            innerLeft.addColorStop(0, 'rgba(255,255,255,0.02)');
+            innerLeft.addColorStop(1, 'rgba(255,255,255,0)');
+            ctx.fillStyle = innerLeft;
+            ctx.fillRect(x, y, 15, h);
+
+            const innerRight = ctx.createLinearGradient(x + w - 15, y, x + w, y);
+            innerRight.addColorStop(0, 'rgba(0,0,0,0)');
+            innerRight.addColorStop(1, 'rgba(0,0,0,0.08)');
+            ctx.fillStyle = innerRight;
+            ctx.fillRect(x + w - 15, y, 15, h);
+
+            // Header bar with gradient
+            const headerGrad = ctx.createLinearGradient(x, y, x + w, y);
+            headerGrad.addColorStop(0, `rgba(${bgRgb.r}, ${bgRgb.g}, ${bgRgb.b}, 0.45)`);
+            headerGrad.addColorStop(1, `rgba(${bgRgb.r}, ${bgRgb.g}, ${bgRgb.b}, 0.1)`);
+            ctx.fillStyle = headerGrad;
+            ctx.fillRect(x, y, w, titleH);
+
+            // Separator line
+            ctx.beginPath();
+            ctx.moveTo(x, y + titleH);
+            ctx.lineTo(x + w, y + titleH);
+            ctx.strokeStyle = `rgba(${accentRgb.r}, ${accentRgb.g}, ${accentRgb.b}, 0.2)`;
+            ctx.lineWidth = 1 / scale;
+            ctx.stroke();
+
+            // Left accent bar
+            ctx.fillStyle = `rgba(${accentRgb.r}, ${accentRgb.g}, ${accentRgb.b}, 0.6)`;
+            ctx.fillRect(x, y, 3 / scale, titleH);
+
+            ctx.restore(); // end clip
+
+            // ── Border ──
+            ctx.beginPath();
+            ctx.roundRect(x, y, w, h, r);
+            ctx.strokeStyle = `rgba(${accentRgb.r}, ${accentRgb.g}, ${accentRgb.b}, 0.12)`;
+            ctx.lineWidth = lineW;
+            ctx.stroke();
+
+            // Top highlight
+            ctx.beginPath();
+            ctx.moveTo(x + r, y);
+            ctx.lineTo(x + w - r, y);
+            ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+            ctx.lineWidth = 1 / scale;
+            ctx.stroke();
+
+            // ── Color dot badge with LED glow ──
+            const dotR = 4 / scale;
+            const dotX = x + 14, dotY = y + titleH / 2;
+
+            const outerGlow = ctx.createRadialGradient(dotX, dotY, 0, dotX, dotY, dotR * 4);
+            outerGlow.addColorStop(0, `rgba(${accentRgb.r}, ${accentRgb.g}, ${accentRgb.b}, 0.3)`);
+            outerGlow.addColorStop(0.4, `rgba(${accentRgb.r}, ${accentRgb.g}, ${accentRgb.b}, 0.08)`);
+            outerGlow.addColorStop(1, `rgba(${accentRgb.r}, ${accentRgb.g}, ${accentRgb.b}, 0)`);
+            ctx.beginPath();
+            ctx.arc(dotX, dotY, dotR * 4, 0, Math.PI * 2);
+            ctx.fillStyle = outerGlow;
+            ctx.fill();
+
+            ctx.beginPath();
+            ctx.arc(dotX, dotY, dotR, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(${accentRgb.r}, ${accentRgb.g}, ${accentRgb.b}, 1)`;
+            ctx.fill();
+
+            ctx.beginPath();
+            ctx.arc(dotX - 1/scale, dotY - 1/scale, dotR * 0.4, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(255,255,255,0.4)';
+            ctx.fill();
+
+            // ── Title text with shadow ──
+            const fontSize = (LiteGraph.DEFAULT_GROUP_FONT || 24) * 0.75;
+            ctx.shadowColor = 'rgba(0,0,0,0.5)';
+            ctx.shadowBlur = 4;
+            ctx.shadowOffsetX = 0;
+            ctx.shadowOffsetY = 1;
+            ctx.font = `500 ${fontSize}px Inter, Arial, sans-serif`;
+            ctx.fillStyle = `rgba(${accentRgb.r}, ${accentRgb.g}, ${accentRgb.b}, 0.95)`;
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(group.title || 'Group', x + 26, y + titleH / 2);
+            ctx.shadowColor = 'transparent';
+            ctx.shadowBlur = 0;
+        }
+
+        ctx.restore();
+    };
+}
+
 comfyApp.registerExtension({
     name: "Comfy.LinearTheme",
     nodeCreated(node) {
@@ -4174,6 +4353,9 @@ comfyApp.registerExtension({
                 }
             }
         }
+
+        // Override group rendering with Linear-style groups
+        installGroupOverride();
 
         // Force --bg-color on body (ComfyUI palette sets its own value on body)
         document.body.style.setProperty("--bg-color", THEME.CLEAR_BACKGROUND_COLOR);
