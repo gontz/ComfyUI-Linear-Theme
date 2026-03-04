@@ -2,17 +2,27 @@
 
 A dark, minimal theme for ComfyUI inspired by [Linear](https://linear.app), [Vercel](https://vercel.com), and [Raycast](https://www.raycast.com).
 
-Near-black surfaces, no shadows, indigo accents, 1px borders. Every pixel is intentional.
+Pure black canvas, glassmorphism bars, no shadows. Every pixel is intentional.
 
-## What it does
+## Features
 
-- **Color palette** for the node canvas (LiteGraph) — nodes, links, widgets, slots
-- **Full CSS overhaul** for the entire UI — Manager dialog, buttons, dropdowns, tabs, tables, scrollbars, tooltips, context menus, sidebars, inputs, and more
-- Everything loads automatically as a custom node extension
+- **Full CSS overhaul** — nodes, widgets, sidebars, dialogs, menus, buttons, inputs, scrollbars, tooltips, and more
+- **Glassmorphism UI** — top bar, bottom toolbar, sidebar, and floating panels with backdrop blur
+- **Theme Editor** — right-click → Linear Theme → Theme Editor to customize everything in real time
+- **Execution glow** — running nodes pulse white, completed flash green, errors flash red
+- **Dot grid background** — clean minimal canvas grid
+- **Color palette** for LiteGraph canvas — nodes, links, slots
+- Loads automatically as a custom node extension
 
-## Before / After
+## Theme Editor
 
-The theme replaces the default bright blue buttons in ComfyUI Manager and other dialogs with a cohesive dark UI that matches the canvas.
+Built-in floating panel to tweak the theme live:
+
+- **Canvas** — background color, dot grid opacity, node radius, connection width
+- **Nodes** — body, title, shadow, outline, widget colors
+- **Slots** — per-type connection colors (CLIP, MODEL, IMAGE, etc.)
+- **UI** — surfaces, borders, text colors, bars glassmorphism (color + opacity)
+- Per-field reset, save/load presets, persist across sessions
 
 ## Install
 
@@ -31,28 +41,7 @@ git clone https://github.com/Arroz-11/ComfyUI-Linear-Theme.git
 
 ### Color palette (optional)
 
-For the full canvas color palette, import `linear_dark.json` in **Settings > Appearance > Color Theme > Import**.
-
-The CSS overrides load automatically from the custom node — the JSON is optional but recommended for the complete experience.
-
-## Design tokens
-
-| Token | Value | Usage |
-|---|---|---|
-| Background | `#09090b` | Canvas background |
-| Surface | `#18181b` | Nodes, dialogs, panels |
-| Elevated | `#1c1c20` | Widgets, inputs, buttons |
-| Border | `#27272a` | All borders (1px) |
-| Accent | `#818cf8` | Selection, active states, connecting links |
-| Text primary | `#f4f4f5` | Main text |
-| Text secondary | `#a1a1aa` | Secondary labels |
-| Text muted | `#71717a` | Descriptions, hints |
-| Danger | `#ef4444` | Errors, destructive actions |
-| Shadow | `rgba(0,0,0,0)` | None — flat surfaces only |
-
-## Slot colors
-
-All slot colors are vibrant and unchanged from the widely-used Obsidian Dark palette for maximum readability.
+Import `linear_dark.json` in **Settings > Appearance > Color Theme > Import** for the full canvas color palette.
 
 ## License
 

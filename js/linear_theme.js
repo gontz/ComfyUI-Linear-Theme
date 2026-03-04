@@ -1,4 +1,5 @@
 import { app } from "../../scripts/app.js";
+import { api } from "../../scripts/api.js";
 
 const comfyApp = app || window.comfyAPI?.app?.app;
 
@@ -9,20 +10,20 @@ const comfyApp = app || window.comfyAPI?.app?.app;
  */
 
 const THEME = {
-    CLEAR_BACKGROUND_COLOR: "#09090b",
-    NODE_TITLE_COLOR: "#e4e4e7",
+    CLEAR_BACKGROUND_COLOR: "#000000",
+    NODE_TITLE_COLOR: "#ffffff",
     NODE_SELECTED_TITLE_COLOR: "#ffffff",
-    NODE_TEXT_COLOR: "#f4f4f5",
-    NODE_DEFAULT_COLOR: "#18181b",
-    NODE_DEFAULT_BGCOLOR: "rgba(20,20,23,0.9)",
-    NODE_DEFAULT_BOXCOLOR: "rgba(255,255,255,0.5)",
-    NODE_BOX_OUTLINE_COLOR: "#f4f4f5",
+    NODE_TEXT_COLOR: "#ffffff",
+    NODE_DEFAULT_COLOR: "#141414",
+    NODE_DEFAULT_BGCOLOR: "#141414",
+    NODE_DEFAULT_BOXCOLOR: "#ffffff",
+    NODE_BOX_OUTLINE_COLOR: "#ffffff",
     NODE_BYPASS_BGCOLOR: "#7737AA",
     NODE_ERROR_COLOUR: "#ef4444",
-    DEFAULT_SHADOW_COLOR: "rgba(0,0,0,0)",
-    WIDGET_BGCOLOR: "#18181b",
-    WIDGET_OUTLINE_COLOR: "#222226",
-    WIDGET_TEXT_COLOR: "#e4e4e7",
+    DEFAULT_SHADOW_COLOR: "rgba(0,0,0,0.15)",
+    WIDGET_BGCOLOR: "#141414",
+    WIDGET_OUTLINE_COLOR: "#141414",
+    WIDGET_TEXT_COLOR: "#ffffff",
     WIDGET_SECONDARY_TEXT_COLOR: "#a1a1aa",
     LINK_COLOR: "#52525b",
     EVENT_LINK_COLOR: "#a8a29e",
@@ -62,34 +63,34 @@ const CSS = `
 
 :root {
     /* ── Base tokens ── */
-    --fg-color: #f4f4f5;
-    --bg-color: #09090b;
-    --comfy-menu-bg: rgba(9,9,11,0.82);
-    --comfy-input-bg: #18181b;
-    --input-text: #e4e4e7;
+    --fg-color: #ffffff;
+    --bg-color: #000000;
+    --comfy-menu-bg: rgba(8,8,10,0.75);
+    --comfy-input-bg: #141414;
+    --input-text: #ffffff;
     --descrip-text: #71717a;
     --drag-text: #a1a1aa;
     --error-text: #ef4444;
     --border-color: #1e1e22;
     --border-default: #27272a;
     --content-hover-fg: #ffffff;
-    --contrast-mix-color: #f4f4f5;
-    --tr-even-bg-color: rgba(20,20,23,0.9);
-    --tr-odd-bg-color: rgba(12,12,14,0.9);
-    --comfy-menu-secondary-bg: rgba(14,14,16,0.82);
+    --contrast-mix-color: #ffffff;
+    --tr-even-bg-color: rgba(20,20,20,0.9);
+    --tr-odd-bg-color: rgba(12,12,12,0.9);
+    --comfy-menu-secondary-bg: rgba(6,6,8,0.75);
 
     /* ── Linear design tokens ── */
-    --linear-accent: #f4f4f5;
+    --linear-accent: #ffffff;
     --linear-accent-hover: #ffffff;
-    --linear-accent-subtle: rgba(244,244,245,0.08);
-    --linear-accent-secondary: #818cf8;
+    --linear-accent-subtle: rgba(255,255,255,0.08);
+    --linear-accent-secondary: #ffffff;
     --linear-surface: #0c0c0e;
-    --linear-surface-elevated: #141417;
-    --linear-surface-raised: #18181b;
+    --linear-surface-elevated: #121212;
+    --linear-surface-raised: #141414;
     --linear-border: #1e1e22;
-    --linear-border-subtle: #18181b;
+    --linear-border-subtle: #141414;
     --linear-border-hover: #2a2a2e;
-    --linear-text-primary: #f4f4f5;
+    --linear-text-primary: #ffffff;
     --linear-text-secondary: #a1a1aa;
     --linear-text-muted: #71717a;
     --linear-text-faint: #52525b;
@@ -99,34 +100,44 @@ const CSS = `
     --linear-warning: #f59e0b;
 
     /* ── Component: Base ── */
-    --base-background: #09090b;
-    --base-foreground: #f4f4f5;
+    --base-background: #000000;
+    --base-foreground: #ffffff;
 
     /* ── Component: Node ── */
-    --component-node-background: rgba(20,20,23,0.9);
-    --component-node-background-hover: rgba(24,24,27,0.92);
-    --component-node-border: #18181b;
-    --component-node-border-selected: #f4f4f5;
-    --component-node-title-color: #e4e4e7;
-    --component-node-text-color: #f4f4f5;
-    --component-node-shadow: rgba(0,0,0,0);
+    --component-node-background: #141414;
+    --component-node-background-hover: rgba(20,20,20,0.92);
+    --component-node-border: #141414;
+    --component-node-border-selected: #ffffff;
+    --component-node-title-color: #ffffff;
+    --component-node-text-color: #ffffff;
+    --component-node-shadow: rgba(0,0,0,0.15);
 
     /* ── Component: Node widgets ── */
-    --component-node-widget-background: #18181b;
-    --component-node-widget-background-highlighted: #222226;
-    --component-node-widget-background-hover: #1e1e22;
-    --component-node-widget-border: #222226;
+    --component-node-widget-background: #141414;
+    --component-node-widget-background-highlighted: #1e1e1e;
+    --component-node-widget-background-hover: #1a1a1a;
+    --component-node-widget-border: #1e1e1e;
     --component-node-widget-border-hover: #2a2a2e;
-    --component-node-widget-text: #e4e4e7;
+    --component-node-widget-text: #ffffff;
     --component-node-widget-secondary-text: #a1a1aa;
 
     /* ── Interface: Menu ── */
-    --interface-menu-surface: rgba(9,9,11,0.82);
+    --interface-menu-surface: rgba(0,0,0,0.82);
     --interface-menu-border: #1e1e22;
-    --interface-menu-item-hover: rgba(244,244,245,0.06);
-    --interface-menu-item-active: rgba(244,244,245,0.1);
-    --interface-menu-text: #f4f4f5;
+    --interface-menu-item-hover: rgba(255,255,255,0.06);
+    --interface-menu-item-active: rgba(255,255,255,0.1);
+    --interface-menu-text: #ffffff;
     --interface-menu-text-secondary: #a1a1aa;
+
+    /* ── Bars / floating panels (glassmorphism) ── */
+    --linear-bars-bg: rgba(8,8,10,0.75);
+
+    /* ── Highlight / Selection — neutral white instead of blue ── */
+    --p-highlight-background: rgba(255,255,255,0.08) !important;
+    --p-highlight-color: rgba(255,255,255,0.87) !important;
+
+    /* ── Dividers / Separators ── */
+    --p-divider-border-color: #27272a;
 
     /* ── Interface: Panel / Sidebar ── */
     --interface-stroke: #1e1e22;
@@ -144,40 +155,40 @@ const CSS = `
     --modal-card-border: #1e1e22;
 
     /* ── Button ── */
-    --button-surface: #141417;
+    --button-surface: #121212;
     --button-surface-hover: #1e1e22;
     --button-active-surface: #222226;
     --button-hover-surface: #1e1e22;
     --button-border: #222226;
     --button-border-hover: #2a2a2e;
-    --button-text: #f4f4f5;
+    --button-text: #ffffff;
     --button-text-secondary: #a1a1aa;
 
     /* ── Input ── */
-    --input-surface: #141417;
-    --input-border: #222226;
-    --input-border-focus: #818cf8;
+    --input-surface: #141414;
+    --input-border: #1e1e22;
+    --input-border-focus: #ffffff;
     --input-placeholder: #52525b;
 
     /* ── Node component (additional) ── */
-    --node-component-border: #222226;
-    --node-component-surface: #141417;
+    --node-component-border: #1e1e1e;
+    --node-component-surface: #121212;
     --node-component-surface-hover: #1e1e22;
 
     /* ── Text tokens ── */
-    --text-primary: #f4f4f5;
+    --text-primary: #ffffff;
     --text-secondary: #a1a1aa;
     --text-muted: #71717a;
     --text-faint: #52525b;
-    --color-text-primary: #f4f4f5;
+    --color-text-primary: #ffffff;
     --color-text-secondary: #a1a1aa;
 
     /* ── PrimeVue surface tokens ── */
     --p-surface-0: #000000;
-    --p-surface-50: #09090b;
+    --p-surface-50: #000000;
     --p-surface-100: #0c0c0e;
-    --p-surface-200: #141417;
-    --p-surface-300: #18181b;
+    --p-surface-200: #121212;
+    --p-surface-300: #141414;
     --p-surface-400: #1e1e22;
     --p-surface-500: #27272a;
     --p-surface-600: #3f3f46;
@@ -186,21 +197,21 @@ const CSS = `
     --p-surface-900: #a1a1aa;
 
     /* ── PrimeVue primary ── */
-    --p-primary-color: #f4f4f5;
+    --p-primary-color: #ffffff;
     --p-primary-color-hover: #ffffff;
-    --p-primary-color-focus: rgba(244,244,245,0.2);
-    --p-primary-contrast-color: #09090b;
+    --p-primary-color-focus: rgba(255,255,255,0.2);
+    --p-primary-contrast-color: #000000;
 
     /* ── PrimeVue text ── */
-    --p-text-color: #f4f4f5;
+    --p-text-color: #ffffff;
     --p-text-muted-color: #71717a;
     --p-text-secondary-color: #a1a1aa;
 
     /* ── PrimeVue content ── */
     --p-content-background: #0c0c0e;
     --p-content-border-color: #1e1e22;
-    --p-content-color: #f4f4f5;
-    --p-content-hover-background: rgba(244,244,245,0.06);
+    --p-content-color: #ffffff;
+    --p-content-hover-background: rgba(255,255,255,0.06);
     --p-content-hover-color: #ffffff;
 
     /* ── PrimeVue overlay ── */
@@ -211,27 +222,27 @@ const CSS = `
     --p-mask-background: rgba(0,0,0,0.6);
 
     /* ── PrimeVue form field ── */
-    --p-form-field-background: #141417;
-    --p-form-field-border-color: #222226;
-    --p-form-field-focus-border-color: #818cf8;
-    --p-form-field-color: #f4f4f5;
+    --p-form-field-background: #121212;
+    --p-form-field-border-color: #1e1e1e;
+    --p-form-field-focus-border-color: #ffffff;
+    --p-form-field-color: #ffffff;
     --p-form-field-placeholder-color: #52525b;
     --p-form-field-hover-border-color: #2a2a2e;
     --p-form-field-disabled-background: #0c0c0e;
     --p-form-field-disabled-color: #3f3f46;
 
     /* ── PrimeVue navigation ── */
-    --p-navigation-item-active-background: rgba(244,244,245,0.08);
-    --p-navigation-item-focus-background: rgba(244,244,245,0.06);
+    --p-navigation-item-active-background: rgba(255,255,255,0.08);
+    --p-navigation-item-focus-background: rgba(255,255,255,0.06);
     --p-navigation-item-color: #a1a1aa;
-    --p-navigation-item-focus-color: #f4f4f5;
-    --p-navigation-item-active-color: #f4f4f5;
+    --p-navigation-item-focus-color: #ffffff;
+    --p-navigation-item-active-color: #ffffff;
 
     /* ── PrimeVue anchor ── */
     --p-anchor-gutter: 2px;
 
     /* ── PrimeVue focus ring ── */
-    --p-focus-ring-color: rgba(129,140,248,0.4);
+    --p-focus-ring-color: rgba(255,255,255,0.4);
     --p-focus-ring-width: 2px;
     --p-focus-ring-style: solid;
     --p-focus-ring-offset: 2px;
@@ -241,80 +252,80 @@ const CSS = `
     --p-tabs-tablist-border-color: #1e1e22;
     --p-tabs-tab-background: transparent;
     --p-tabs-tab-color: #71717a;
-    --p-tabs-tab-hover-color: #f4f4f5;
-    --p-tabs-tab-active-color: #f4f4f5;
-    --p-tabs-tab-active-border-color: #f4f4f5;
+    --p-tabs-tab-hover-color: #ffffff;
+    --p-tabs-tab-active-color: #ffffff;
+    --p-tabs-tab-active-border-color: #ffffff;
     --p-tabs-tabpanel-background: transparent;
-    --p-tabs-active-bar-background: #f4f4f5;
+    --p-tabs-active-bar-background: #ffffff;
 
     /* ── PrimeVue dialog ── */
     --p-dialog-background: #0c0c0e;
     --p-dialog-border-color: #1e1e22;
-    --p-dialog-color: #f4f4f5;
+    --p-dialog-color: #ffffff;
     --p-dialog-title-font-weight: 600;
 
     /* ── PrimeVue button ── */
-    --p-button-background: #141417;
-    --p-button-border-color: #222226;
+    --p-button-background: #121212;
+    --p-button-border-color: #1e1e1e;
     --p-button-color: #a1a1aa;
     --p-button-hover-background: #1e1e22;
     --p-button-hover-border-color: #2a2a2e;
     --p-button-hover-color: #ffffff;
     --p-button-active-background: #222226;
     --p-button-active-border-color: #2a2a2e;
-    --p-button-focus-ring-color: rgba(129,140,248,0.4);
+    --p-button-focus-ring-color: rgba(255,255,255,0.4);
 
     /* ── PrimeVue button primary (prevent blue) ── */
-    --p-button-primary-background: #141417;
-    --p-button-primary-border-color: #222226;
+    --p-button-primary-background: #121212;
+    --p-button-primary-border-color: #1e1e1e;
     --p-button-primary-color: #a1a1aa;
     --p-button-primary-hover-background: #1e1e22;
     --p-button-primary-hover-border-color: #2a2a2e;
-    --p-button-primary-hover-color: #f4f4f5;
+    --p-button-primary-hover-color: #ffffff;
     --p-button-primary-active-background: #222226;
     --p-button-primary-active-border-color: #2a2a2e;
 
     /* ── PrimeVue select / dropdown ── */
-    --p-select-background: #141417;
-    --p-select-border-color: #222226;
-    --p-select-color: #f4f4f5;
+    --p-select-background: #121212;
+    --p-select-border-color: #1e1e1e;
+    --p-select-color: #ffffff;
     --p-select-hover-border-color: #2a2a2e;
-    --p-select-focus-border-color: #818cf8;
+    --p-select-focus-border-color: #ffffff;
     --p-select-overlay-background: #0c0c0e;
     --p-select-overlay-border-color: #1e1e22;
-    --p-select-option-color: #f4f4f5;
-    --p-select-option-focus-background: rgba(244,244,245,0.06);
+    --p-select-option-color: #ffffff;
+    --p-select-option-focus-background: rgba(255,255,255,0.06);
     --p-select-option-focus-color: #ffffff;
-    --p-select-option-selected-background: rgba(244,244,245,0.1);
-    --p-select-option-selected-color: #f4f4f5;
-    --p-select-option-selected-focus-background: rgba(244,244,245,0.12);
+    --p-select-option-selected-background: rgba(255,255,255,0.1);
+    --p-select-option-selected-color: #ffffff;
+    --p-select-option-selected-focus-background: rgba(255,255,255,0.12);
     --p-select-option-selected-focus-color: #ffffff;
     --p-select-placeholder-color: #52525b;
 
     /* ── PrimeVue input ── */
-    --p-inputtext-background: #141417;
-    --p-inputtext-border-color: #222226;
-    --p-inputtext-color: #f4f4f5;
+    --p-inputtext-background: #121212;
+    --p-inputtext-border-color: #1e1e1e;
+    --p-inputtext-color: #ffffff;
     --p-inputtext-hover-border-color: #2a2a2e;
-    --p-inputtext-focus-border-color: #818cf8;
+    --p-inputtext-focus-border-color: #ffffff;
     --p-inputtext-placeholder-color: #52525b;
 
     /* ── PrimeVue checkbox ── */
-    --p-checkbox-background: #141417;
-    --p-checkbox-border-color: #222226;
+    --p-checkbox-background: #121212;
+    --p-checkbox-border-color: #1e1e1e;
     --p-checkbox-hover-border-color: #2a2a2e;
-    --p-checkbox-checked-background: #f4f4f5;
-    --p-checkbox-checked-border-color: #f4f4f5;
-    --p-checkbox-checked-color: #09090b;
-    --p-checkbox-icon-checked-color: #09090b;
+    --p-checkbox-checked-background: #ffffff;
+    --p-checkbox-checked-border-color: #ffffff;
+    --p-checkbox-checked-color: #000000;
+    --p-checkbox-icon-checked-color: #000000;
 
     /* ── PrimeVue toggle switch ── */
     --p-toggleswitch-background: #222226;
     --p-toggleswitch-border-color: #2a2a2e;
-    --p-toggleswitch-checked-background: #f4f4f5;
-    --p-toggleswitch-checked-border-color: #f4f4f5;
+    --p-toggleswitch-checked-background: #ffffff;
+    --p-toggleswitch-checked-border-color: #ffffff;
     --p-toggleswitch-handle-background: #71717a;
-    --p-toggleswitch-handle-checked-background: #09090b;
+    --p-toggleswitch-handle-checked-background: #000000;
 
     /* ── PrimeVue datatable ── */
     --p-datatable-header-background: #0c0c0e;
@@ -386,8 +397,8 @@ const CSS = `
    ============================================ */
 body,
 body.litegraph {
-    background: #09090b !important;
-    color: #f4f4f5 !important;
+    background: var(--bg-color, #000000) !important;
+    color: var(--fg-color, #ffffff) !important;
     font-family: 'Inter', Arial, sans-serif !important;
 }
 
@@ -819,7 +830,7 @@ table td {
 .p-menu,
 .p-contextmenu,
 .p-menubar {
-    background: rgba(9,9,11,0.82) !important;
+    background: var(--linear-bars-bg, rgba(8,8,10,0.75)) !important;
     border: 1px solid rgba(30,30,34,0.7) !important;
     border-radius: 8px !important;
     box-shadow: none !important;
@@ -906,14 +917,14 @@ table td {
 }
 
 .side-tool-bar-container.connected-sidebar {
-    background-color: rgba(9,9,11,0.82) !important;
+    background-color: var(--linear-bars-bg, rgba(8,8,10,0.75)) !important;
     border-color: rgba(30,30,34,0.7) !important;
     backdrop-filter: blur(16px) !important;
     -webkit-backdrop-filter: blur(16px) !important;
 }
 
 .side-tool-bar-container .sidebar-item-group {
-    background-color: rgba(9,9,11,0.82) !important;
+    background-color: var(--linear-bars-bg, rgba(8,8,10,0.75)) !important;
     border: 1px solid rgba(30,30,34,0.7) !important;
     box-shadow: none !important;
     backdrop-filter: blur(16px) !important;
@@ -924,7 +935,7 @@ table td {
 .p-sidebar,
 .comfy-sidebar,
 .side-bar-panel {
-    background: rgba(12,12,14,0.82) !important;
+    background: var(--linear-bars-bg, rgba(8,8,10,0.75)) !important;
     border-right: 1px solid rgba(30,30,34,0.7) !important;
     box-shadow: none !important;
     color: var(--linear-text-primary) !important;
@@ -942,10 +953,66 @@ table td {
 }
 
 .p-panel .p-panel-content {
-    background: rgba(9,9,11,0.82) !important;
+    background: var(--linear-bars-bg, rgba(8,8,10,0.75)) !important;
     border-color: rgba(30,30,34,0.7) !important;
     backdrop-filter: blur(16px) !important;
     -webkit-backdrop-filter: blur(16px) !important;
+}
+
+/* Top menu bar container — glassmorphism via ::before pseudo-element.
+   backdrop-filter on the container itself breaks position:fixed on the undocked actionbar,
+   but ::before doesn't create a containing block for siblings */
+.actionbar-container {
+    position: relative !important;
+    background: transparent !important;
+    isolation: isolate !important;
+}
+.actionbar-container::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--linear-bars-bg, rgba(8,8,10,0.75));
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-radius: inherit;
+    z-index: -1;
+    pointer-events: none;
+}
+
+/* Bottom canvas toolbar (zoom, cursor, layout toggles) */
+.graph-canvas-panel .p-buttongroup {
+    background: var(--linear-bars-bg, rgba(8,8,10,0.75)) !important;
+    backdrop-filter: blur(16px) !important;
+    -webkit-backdrop-filter: blur(16px) !important;
+}
+
+/* Bottom panel (queue/logs) — glassmorphism */
+.bottom-panel {
+    background: var(--linear-bars-bg, rgba(8,8,10,0.75)) !important;
+    backdrop-filter: blur(16px) !important;
+    -webkit-backdrop-filter: blur(16px) !important;
+}
+
+/* Canvas container — match canvas background, avoid bluish zinc tint */
+.graph-canvas-container {
+    background: var(--bg-color, #000000) !important;
+}
+
+/* Sidebar icon rail — subtle cool gray tint */
+.side-tool-bar-container button {
+    color: #8a8e94 !important;
+}
+.side-tool-bar-container button:hover {
+    color: #d4d4d8 !important;
+}
+.side-tool-bar-container button.active,
+.side-tool-bar-container button[aria-selected="true"] {
+    color: #f4f4f5 !important;
+}
+
+/* Separators/dividers — subtle */
+hr, .p-divider {
+    border-color: #27272a !important;
 }
 
 /* ============================================
@@ -1310,7 +1377,7 @@ table td {
 
 /* -- Graph canvas container -- */
 .graph-canvas-container {
-    background: #09090b !important;
+    background: var(--bg-color, #000000) !important;
 }
 
 /* -- Main layout -- */
@@ -2202,7 +2269,7 @@ table td {
 
 /* ── Panel container ── */
 .actionbar .p-panel-content {
-    background: rgba(9,9,11,0.82) !important;
+    background: var(--linear-bars-bg, rgba(8,8,10,0.75)) !important;
     border: none !important;
     border-radius: 10px !important;
     padding: 4px 6px !important;
@@ -2210,12 +2277,14 @@ table td {
     -webkit-backdrop-filter: blur(16px) !important;
 }
 
-/* When docked in top menu */
+/* When docked in top menu — keep glassmorphism */
 .actionbar.p-0 .p-panel-content,
 .actionbar.border-none .p-panel-content {
     border: none !important;
-    background: transparent !important;
-    backdrop-filter: none !important;
+    background: var(--linear-bars-bg, rgba(8,8,10,0.75)) !important;
+    backdrop-filter: blur(16px) !important;
+    -webkit-backdrop-filter: blur(16px) !important;
+    border-radius: 10px !important;
 }
 
 /* ── Uniform height for all items ── */
@@ -2223,6 +2292,18 @@ table td {
     height: 32px !important;
     display: inline-flex !important;
     align-items: center !important;
+}
+
+/* ── Batch count spinner — remove inner borders ── */
+.actionbar .p-inputnumber .p-inputnumber-input,
+.actionbar .p-inputnumber .p-inputnumber-button,
+.actionbar .p-inputnumber-input,
+.actionbar .p-inputnumber-button,
+.actionbar .p-inputnumber-increment-button,
+.actionbar .p-inputnumber-decrement-button {
+    border: 0 !important;
+    border-width: 0 !important;
+    border-style: none !important;
 }
 
 /* ── Drag handle ── */
@@ -2238,13 +2319,13 @@ table td {
 /* ── Queue / Run split button ── */
 .comfyui-queue-button .p-splitbutton-button,
 .comfyui-queue-button .p-splitbutton-dropdown {
-    background: rgba(10,10,10,0.5) !important;
-    border: 1px solid #222226 !important;
+    background: rgba(8,8,10,0.4) !important;
+    border: none !important;
     color: #a1a1aa !important;
     font-size: 13px !important;
     font-weight: 500 !important;
     height: 32px !important;
-    transition: border-color 150ms ease, color 150ms ease !important;
+    transition: color 150ms ease, background 150ms ease !important;
 }
 
 .comfyui-queue-button .p-splitbutton-button {
@@ -2261,9 +2342,8 @@ table td {
 
 .comfyui-queue-button .p-splitbutton-button:hover,
 .comfyui-queue-button .p-splitbutton-dropdown:hover {
-    border-color: #2a2a2e !important;
     color: #f4f4f5 !important;
-    background: rgba(244,244,245,0.04) !important;
+    background: rgba(255,255,255,0.06) !important;
 }
 
 /* Run label */
@@ -2366,8 +2446,7 @@ button.comfyui-button.primary:hover,
 
 .actionbar .p-inputnumber .p-inputnumber-input {
     background: rgba(10,10,10,0.5) !important;
-    border: 1px solid #222226 !important;
-    border-right: none !important;
+    border: none !important;
     border-radius: 4px 0 0 4px !important;
     color: #a1a1aa !important;
     font-size: 12px !important;
@@ -2379,14 +2458,13 @@ button.comfyui-button.primary:hover,
 }
 
 .actionbar .p-inputnumber .p-inputnumber-input:focus {
-    border-color: #818cf8 !important;
+    border: none !important;
     color: #f4f4f5 !important;
 }
 
 .actionbar .p-inputnumber-button {
     background: rgba(10,10,10,0.5) !important;
-    border: 1px solid #222226 !important;
-    border-left: none !important;
+    border: none !important;
     color: #52525b !important;
     width: 16px !important;
     height: 16px !important;
@@ -2704,7 +2782,7 @@ button.comfyui-button.primary:hover,
 [class*="z-1200"].p-buttongroup,
 [class*="z-1200"][class*="bg-comfy-menu-bg"],
 .p-buttongroup[class*="bottom-0"][class*="right-0"][class*="z-1200"] {
-    background: rgba(9,9,11,0.82) !important;
+    background: var(--linear-bars-bg, rgba(8,8,10,0.75)) !important;
     backdrop-filter: blur(16px) !important;
     -webkit-backdrop-filter: blur(16px) !important;
     border-color: rgba(30,30,34,0.7) !important;
@@ -3038,6 +3116,14 @@ function stripNodeColor(node) {
     delete node.bgcolor;
 }
 
+// Ensure node is wide enough to show full title without truncation
+function getTitleMinWidth(node) {
+    const title = node.title || "";
+    const fontSize = LiteGraph.NODE_TEXT_SIZE || 14;
+    const padding = 50; // space for collapse arrow + badges
+    return title.length * fontSize * 0.62 + padding;
+}
+
 /* ── Arrange selected nodes: straight main chain, sub-nodes below target ── */
 function arrangeSelectedNodes(selectedNodes) {
     if (selectedNodes.length === 0) return;
@@ -3241,13 +3327,782 @@ function arrangeSelectedNodes(selectedNodes) {
     comfyApp.canvas.setDirty(true, true);
 }
 
+/* ═══════════════════════════════════════════════════════════════════
+   Module-scope dot grid data URL (shared with ThemeEditor)
+   ═══════════════════════════════════════════════════════════════════ */
+let currentDotDataUrl = null;
+
+/* ═══════════════════════════════════════════════════════════════════
+   Execution Glow — State Tracking
+   ═══════════════════════════════════════════════════════════════════ */
+const executionState = {
+    runningNodeId: null,
+    completedNodes: {},  // nodeId → timestamp
+    errorNodes: {},      // nodeId → timestamp
+};
+
+/* ═══════════════════════════════════════════════════════════════════
+   Theme Editor — Floating Panel
+   ═══════════════════════════════════════════════════════════════════ */
+
+const THEME_EDITOR_CSS = `
+.te-panel {
+    position: fixed; top: 60px; right: 20px; width: 280px;
+    max-height: calc(100vh - 80px); overflow-y: auto;
+    background: rgba(9,9,11,0.92); backdrop-filter: blur(16px);
+    border: 1px solid #1e1e22; border-radius: 12px;
+    z-index: 99999; font-family: Inter, system-ui, sans-serif;
+    font-size: 12px; color: #a1a1aa;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    display: none;
+}
+.te-panel.open { display: block; }
+.te-panel * { box-sizing: border-box; }
+.te-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 12px; cursor: grab; user-select: none;
+    border-bottom: 1px solid #1e1e22;
+}
+.te-header:active { cursor: grabbing; }
+.te-title { font-weight: 600; color: #f4f4f5; font-size: 13px; }
+.te-header-btns { display: flex; gap: 6px; }
+.te-btn {
+    background: none; border: none; color: #71717a; cursor: pointer;
+    font-size: 14px; padding: 2px 4px; border-radius: 4px; line-height: 1;
+}
+.te-btn:hover { color: #f4f4f5; background: rgba(244,244,245,0.06); }
+.te-section { border-bottom: 1px solid #18181b; }
+.te-section:last-child { border-bottom: none; }
+.te-section-header {
+    display: flex; align-items: center; padding: 8px 12px;
+    cursor: pointer; user-select: none; font-weight: 600;
+    font-size: 10px; letter-spacing: 0.08em; color: #71717a;
+    text-transform: uppercase;
+}
+.te-section-header:hover { color: #a1a1aa; }
+.te-arrow { margin-right: 6px; font-size: 8px; transition: transform 0.15s; display: inline-block; }
+.te-section.open .te-arrow { transform: rotate(90deg); }
+.te-section-body { display: none; padding: 4px 12px 10px; }
+.te-section.open .te-section-body { display: block; }
+.te-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 4px 0; gap: 8px;
+}
+.te-label { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 11px; }
+.te-color {
+    -webkit-appearance: none; appearance: none;
+    width: 28px; height: 20px; border: 1px solid #27272a; border-radius: 4px;
+    cursor: pointer; background: none; padding: 0;
+}
+.te-color::-webkit-color-swatch-wrapper { padding: 0; }
+.te-color::-webkit-color-swatch { border: none; border-radius: 3px; }
+.te-color::-moz-color-swatch { border: none; border-radius: 3px; }
+.te-range {
+    width: 90px; height: 4px; -webkit-appearance: none; appearance: none;
+    background: #27272a; border-radius: 2px; outline: none; cursor: pointer;
+}
+.te-range::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 12px; height: 12px;
+    background: #f4f4f5; border-radius: 50%; cursor: pointer;
+}
+.te-range::-moz-range-thumb {
+    width: 12px; height: 12px; background: #f4f4f5;
+    border-radius: 50%; cursor: pointer; border: none;
+}
+.te-range-val { width: 32px; text-align: right; font-size: 10px; color: #52525b; font-variant-numeric: tabular-nums; }
+.te-field-reset {
+    font-size: 11px; padding: 1px 3px; opacity: 0; pointer-events: none;
+    transition: opacity 0.15s; flex-shrink: 0;
+}
+.te-row.modified .te-field-reset { opacity: 1; pointer-events: auto; }
+.te-presets { border-bottom: 1px solid #1e1e22; padding: 8px 12px; }
+.te-presets-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+.te-presets-bar span { font-weight: 600; font-size: 10px; letter-spacing: 0.08em; color: #71717a; text-transform: uppercase; }
+.te-preset-save {
+    font-size: 10px; padding: 3px 8px; border-radius: 4px;
+    background: rgba(244,244,245,0.06); border: 1px solid #27272a;
+    color: #a1a1aa; cursor: pointer;
+}
+.te-preset-save:hover { color: #f4f4f5; border-color: #3f3f46; }
+.te-preset-list { display: flex; flex-direction: column; gap: 2px; }
+.te-preset-item {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 4px 6px; border-radius: 4px; cursor: pointer;
+    font-size: 11px; color: #a1a1aa;
+}
+.te-preset-item:hover { background: rgba(244,244,245,0.06); color: #f4f4f5; }
+.te-preset-item-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.te-preset-item-btns { display: flex; gap: 2px; opacity: 0; transition: opacity 0.1s; }
+.te-preset-item:hover .te-preset-item-btns { opacity: 1; }
+.te-preset-del { font-size: 10px; padding: 1px 3px; }
+.te-preset-empty { font-size: 10px; color: #3f3f46; padding: 4px 0; }
+.te-panel::-webkit-scrollbar { width: 4px; }
+.te-panel::-webkit-scrollbar-track { background: transparent; }
+.te-panel::-webkit-scrollbar-thumb { background: #27272a; border-radius: 2px; }
+`;
+
+const THEME_DEFAULTS = {
+    canvas: {
+        backgroundColor: "#000000",
+        dotGridOpacity: 0.2,
+        nodeBorderRadius: 10,
+        connectionWidth: 1.5,
+    },
+    nodes: {
+        bodyColor: "#141414",
+        titleColor: "#141414",
+        shadowOpacity: 0.15,
+        boxIndicatorColor: "#ffffff",
+        outlineColor: "#ffffff",
+        outlineTransparent: false,
+        titleTextColor: "#ffffff",
+        widgetBackground: "#141414",
+    },
+    slots: {
+        CLIP: "#FACC15", CONDITIONING: "#FB923C", IMAGE: "#60A5FA",
+        LATENT: "#F0ABFC", MASK: "#4ADE80", MODEL: "#A78BFA",
+        VAE: "#F87171", CONTROL_NET: "#34D399",
+    },
+    ui: {
+        barsBackground: "#08080a",
+        barsOpacity: 0.75,
+        surface: "#0c0c0e", surfaceElevated: "#121212",
+        border: "#1e1e22", textPrimary: "#ffffff",
+        textSecondary: "#a1a1aa", textMuted: "#71717a",
+        accent: "#ffffff", accentSecondary: "#ffffff",
+    },
+};
+
+const UI_VAR_MAP = {
+    surface: [
+        "--linear-surface", "--interface-panel-surface", "--interface-panel-header",
+        "--p-content-background", "--p-overlay-background", "--dialog-surface",
+        "--modal-card-background", "--p-dialog-background", "--p-surface-100",
+    ],
+    surfaceElevated: [
+        "--linear-surface-elevated", "--p-surface-200",
+        "--button-surface", "--p-form-field-background", "--p-inputtext-background",
+        "--p-select-background", "--p-button-background", "--p-button-primary-background",
+        "--node-component-surface",
+    ],
+    border: [
+        "--linear-border", "--border-color", "--interface-stroke",
+        "--interface-panel-border", "--p-content-border-color",
+        "--p-overlay-border-color", "--dialog-border", "--modal-card-border",
+        "--p-dialog-border-color", "--p-tabs-tablist-border-color",
+    ],
+    textPrimary: [
+        "--linear-text-primary", "--fg-color", "--text-primary", "--color-text-primary",
+        "--base-foreground", "--p-text-color", "--p-content-color",
+        "--interface-menu-text", "--button-text", "--p-form-field-color",
+        "--p-inputtext-color", "--p-select-color",
+        "--p-datatable-row-color", "--p-toast-color", "--p-dialog-color",
+    ],
+    textSecondary: [
+        "--linear-text-secondary", "--text-secondary", "--color-text-secondary",
+        "--drag-text", "--p-text-secondary-color", "--interface-menu-text-secondary",
+        "--button-text-secondary",
+    ],
+    textMuted: [
+        "--linear-text-muted", "--text-muted", "--descrip-text",
+        "--p-text-muted-color", "--p-tabs-tab-color",
+    ],
+    accent: [
+        "--linear-accent", "--p-primary-color",
+    ],
+    accentSecondary: [
+        "--linear-accent-secondary", "--input-border-focus",
+        "--p-form-field-focus-border-color", "--p-select-focus-border-color",
+        "--p-inputtext-focus-border-color", "--p-focus-ring-color",
+    ],
+};
+
+const SECTION_DEFS = [
+    {
+        key: "canvas", label: "Canvas",
+        fields: [
+            { key: "backgroundColor", label: "Background", type: "color" },
+            { key: "dotGridOpacity", label: "Dot Grid", type: "range", min: 0, max: 0.5, step: 0.01 },
+            { key: "nodeBorderRadius", label: "Node Radius", type: "range", min: 0, max: 20, step: 1 },
+            { key: "connectionWidth", label: "Connection Width", type: "range", min: 1, max: 6, step: 0.5 },
+        ],
+    },
+    {
+        key: "nodes", label: "Nodes",
+        fields: [
+            { key: "bodyColor", label: "Body Color", type: "color" },
+            { key: "titleColor", label: "Title Color", type: "color" },
+            { key: "shadowOpacity", label: "Shadow", type: "range", min: 0, max: 1, step: 0.05 },
+            { key: "boxIndicatorColor", label: "Box Indicator", type: "color" },
+            { key: "outlineColor", label: "Outline", type: "color" },
+            { key: "outlineTransparent", label: "Outline Transparent", type: "checkbox" },
+            { key: "titleTextColor", label: "Title Text", type: "color" },
+            { key: "widgetBackground", label: "Widget BG", type: "color" },
+        ],
+    },
+    {
+        key: "slots", label: "Slots",
+        fields: Object.keys(THEME_DEFAULTS.slots).map(k => ({ key: k, label: k, type: "color" })),
+    },
+    {
+        key: "ui", label: "UI",
+        fields: [
+            { key: "barsBackground", label: "Bars Color", type: "color" },
+            { key: "barsOpacity", label: "Bars Opacity", type: "range", min: 0.3, max: 1, step: 0.02 },
+            { key: "surface", label: "Surface", type: "color" },
+            { key: "surfaceElevated", label: "Surface Elevated", type: "color" },
+            { key: "border", label: "Border", type: "color" },
+            { key: "textPrimary", label: "Text Primary", type: "color" },
+            { key: "textSecondary", label: "Text Secondary", type: "color" },
+            { key: "textMuted", label: "Text Muted", type: "color" },
+            { key: "accent", label: "Accent", type: "color" },
+            { key: "accentSecondary", label: "Accent Secondary", type: "color" },
+        ],
+    },
+];
+
+class ThemeEditor {
+    constructor() {
+        this.config = JSON.parse(JSON.stringify(THEME_DEFAULTS));
+        this.panel = null;
+        this._styleEl = null;
+        this._rangeDebounce = null;
+    }
+
+    init() {
+        this._injectCSS();
+        this._createPanel();
+        this._loadConfig();
+        this._syncInputsToConfig();
+        this.applyConfig();
+        this._renderPresets();
+    }
+
+    _injectCSS() {
+        if (this._styleEl) return;
+        this._styleEl = document.createElement("style");
+        this._styleEl.textContent = THEME_EDITOR_CSS;
+        document.head.appendChild(this._styleEl);
+    }
+
+    _createPanel() {
+        const panel = document.createElement("div");
+        panel.className = "te-panel";
+        panel.innerHTML = `
+            <div class="te-header">
+                <span class="te-title">Theme Editor</span>
+                <div class="te-header-btns">
+                    <button class="te-btn te-reset" title="Reset to defaults">↺</button>
+                    <button class="te-btn te-close" title="Close">✕</button>
+                </div>
+            </div>
+            <div class="te-body"></div>
+        `;
+
+        const body = panel.querySelector(".te-body");
+
+        // Presets section
+        const presetsDiv = document.createElement("div");
+        presetsDiv.className = "te-presets";
+        presetsDiv.innerHTML = `
+            <div class="te-presets-bar">
+                <span>Presets</span>
+                <button class="te-preset-save">Save</button>
+            </div>
+            <div class="te-preset-list"></div>
+        `;
+        body.appendChild(presetsDiv);
+        this._presetListEl = presetsDiv.querySelector(".te-preset-list");
+
+        presetsDiv.querySelector(".te-preset-save").addEventListener("click", () => {
+            const name = prompt("Preset name:");
+            if (name && name.trim()) this._savePreset(name.trim());
+        });
+
+        const savedSections = this._loadSections();
+
+        for (const sec of SECTION_DEFS) {
+            const section = document.createElement("div");
+            section.className = "te-section" + (savedSections[sec.key] ? " open" : "");
+            section.dataset.section = sec.key;
+
+            const resetBtn = `<button class="te-btn te-field-reset" data-section="\${sec}" data-key="\${key}" title="Reset to default">↺</button>`;
+
+            let fieldsHtml = "";
+            for (const f of sec.fields) {
+                const val = this.config[sec.key][f.key];
+                const rb = `<button class="te-btn te-field-reset" data-section="${sec.key}" data-key="${f.key}" title="Reset to default">↺</button>`;
+                if (f.type === "color") {
+                    fieldsHtml += `<div class="te-row">
+                        <span class="te-label">${f.label}</span>
+                        <input type="color" class="te-color" data-section="${sec.key}" data-key="${f.key}" value="${val}">
+                        ${rb}
+                    </div>`;
+                } else if (f.type === "range") {
+                    fieldsHtml += `<div class="te-row">
+                        <span class="te-label">${f.label}</span>
+                        <input type="range" class="te-range" data-section="${sec.key}" data-key="${f.key}"
+                            min="${f.min}" max="${f.max}" step="${f.step}" value="${val}">
+                        <span class="te-range-val">${val}</span>
+                        ${rb}
+                    </div>`;
+                } else if (f.type === "checkbox") {
+                    fieldsHtml += `<div class="te-row">
+                        <span class="te-label">${f.label}</span>
+                        <input type="checkbox" data-section="${sec.key}" data-key="${f.key}"
+                            ${val ? "checked" : ""} style="cursor:pointer;">
+                        ${rb}
+                    </div>`;
+                }
+            }
+
+            section.innerHTML = `
+                <div class="te-section-header"><span class="te-arrow">▶</span>${sec.label}</div>
+                <div class="te-section-body">${fieldsHtml}</div>
+            `;
+            body.appendChild(section);
+        }
+
+        // Stop propagation so canvas doesn't react
+        for (const evt of ["pointerdown", "pointermove", "pointerup", "wheel", "keydown", "keyup"]) {
+            panel.addEventListener(evt, e => e.stopPropagation());
+        }
+
+        panel.querySelector(".te-close").addEventListener("click", () => this.toggle(false));
+        panel.querySelector(".te-reset").addEventListener("click", () => this.resetConfig());
+
+        // Per-field reset buttons
+        panel.addEventListener("click", (e) => {
+            const btn = e.target.closest(".te-field-reset");
+            if (!btn) return;
+            const section = btn.dataset.section;
+            const key = btn.dataset.key;
+            if (!section || !key) return;
+            this.config[section][key] = THEME_DEFAULTS[section][key];
+            this._applySection(section);
+            this._syncInputsToConfig();
+            this._updateModifiedState();
+        });
+
+        panel.querySelectorAll(".te-section-header").forEach(header => {
+            header.addEventListener("click", () => {
+                header.parentElement.classList.toggle("open");
+                this._saveSections();
+            });
+        });
+
+        panel.addEventListener("input", (e) => this._onInputChange(e));
+        this._setupDrag(panel);
+
+        const pos = this._loadPosition();
+        if (pos) {
+            panel.style.top = pos.y + "px";
+            panel.style.left = pos.x + "px";
+            panel.style.right = "auto";
+        }
+
+        document.body.appendChild(panel);
+        this.panel = panel;
+    }
+
+    toggle(force) {
+        if (!this.panel) return;
+        const show = force !== undefined ? force : !this.panel.classList.contains("open");
+        this.panel.classList.toggle("open", show);
+    }
+
+    // ── Apply functions ──
+
+    applyConfig() {
+        this.applyCanvas();
+        this.applyNodes();
+        this.applySlots();
+        this.applyUI();
+        this.saveConfig();
+        if (comfyApp.canvas) comfyApp.canvas.setDirty(true, true);
+    }
+
+    applyCanvas() {
+        const c = this.config.canvas;
+        const canvas = comfyApp.canvas;
+        if (!canvas) return;
+
+        // Background color — target every possible source
+        if (window.LiteGraph) {
+            LiteGraph.CLEAR_BACKGROUND_COLOR = c.backgroundColor;
+        }
+        // Instance property (what LiteGraph actually reads during render)
+        canvas.clear_background_color = c.backgroundColor;
+        document.body.style.background = c.backgroundColor;
+        // Set --bg-color on both root AND body (ComfyUI palette sets its own --bg-color on body)
+        document.documentElement.style.setProperty("--bg-color", c.backgroundColor);
+        document.body.style.setProperty("--bg-color", c.backgroundColor);
+        document.documentElement.style.setProperty("--base-background", c.backgroundColor);
+        document.documentElement.style.setProperty("--p-surface-0", c.backgroundColor);
+        document.documentElement.style.setProperty("--p-surface-50", c.backgroundColor);
+        if (canvas.canvas) canvas.canvas.style.background = c.backgroundColor;
+
+        this._buildDotGrid(c.dotGridOpacity);
+        canvas.round_radius = c.nodeBorderRadius;
+        canvas.connections_width = c.connectionWidth;
+    }
+
+    applyNodes() {
+        const n = this.config.nodes;
+        if (!window.LiteGraph) return;
+
+        LiteGraph.NODE_DEFAULT_BGCOLOR = n.bodyColor;
+        LiteGraph.NODE_DEFAULT_COLOR = n.titleColor;
+        LiteGraph.DEFAULT_SHADOW_COLOR = `rgba(0,0,0,${n.shadowOpacity})`;
+        LiteGraph.NODE_DEFAULT_BOXCOLOR = n.boxIndicatorColor;
+        LiteGraph.NODE_BOX_OUTLINE_COLOR = n.outlineTransparent ? "rgba(0,0,0,0)" : n.outlineColor;
+        LiteGraph.NODE_TITLE_COLOR = n.titleTextColor;
+        document.documentElement.style.setProperty("--component-node-title-color", n.titleTextColor);
+        LiteGraph.WIDGET_BGCOLOR = n.widgetBackground;
+        LiteGraph.WIDGET_OUTLINE_COLOR = n.widgetBackground;
+
+        if (comfyApp.graph?._nodes) {
+            for (const node of comfyApp.graph._nodes) {
+                delete node.color;
+                delete node.bgcolor;
+            }
+        }
+    }
+
+    applySlots() {
+        const canvas = comfyApp.canvas;
+        if (!canvas) return;
+        if (!canvas.default_connection_color_byType) canvas.default_connection_color_byType = {};
+        for (const [type, color] of Object.entries(this.config.slots)) {
+            canvas.default_connection_color_byType[type] = color;
+        }
+    }
+
+    applyUI() {
+        const u = this.config.ui;
+        const root = document.documentElement;
+        for (const [key, vars] of Object.entries(UI_VAR_MAP)) {
+            const val = u[key];
+            if (!val) continue;
+            for (const v of vars) {
+                if (v === "--p-focus-ring-color") {
+                    root.style.setProperty(v, val + "66");
+                } else {
+                    root.style.setProperty(v, val);
+                }
+            }
+        }
+        // Bars glassmorphism — convert hex + opacity to rgba
+        const hex = u.barsBackground || "#08080a";
+        const op = u.barsOpacity ?? 0.75;
+        const r = parseInt(hex.slice(1,3), 16);
+        const g = parseInt(hex.slice(3,5), 16);
+        const b = parseInt(hex.slice(5,7), 16);
+        root.style.setProperty("--linear-bars-bg", `rgba(${r},${g},${b},${op})`);
+    }
+
+    _buildDotGrid(opacity) {
+        const canvas = comfyApp.canvas;
+        if (!canvas) return;
+        const tileSize = 100, dotSpacing = 10;
+        const c = document.createElement("canvas");
+        c.width = tileSize; c.height = tileSize;
+        const ctx = c.getContext("2d");
+        ctx.fillStyle = `rgba(255,255,255,${opacity})`;
+        for (let gy = 0; gy < tileSize; gy += dotSpacing) {
+            for (let gx = 0; gx < tileSize; gx += dotSpacing) {
+                ctx.fillRect(gx, gy, 1, 1);
+            }
+        }
+        currentDotDataUrl = c.toDataURL();
+        canvas.background_image = currentDotDataUrl;
+        canvas._pattern = null;
+        canvas._pattern_img = null;
+
+        if (window.LiteGraph) {
+            Object.defineProperty(LiteGraph, "BACKGROUND_IMAGE", {
+                get() { return currentDotDataUrl; },
+                set() {},
+                configurable: true
+            });
+        }
+    }
+
+    // ── Persistence ──
+
+    _loadConfig() {
+        try {
+            const raw = localStorage.getItem("linearTheme.config");
+            if (raw) {
+                const saved = JSON.parse(raw);
+                for (const section of Object.keys(THEME_DEFAULTS)) {
+                    if (saved[section]) {
+                        this.config[section] = { ...THEME_DEFAULTS[section], ...saved[section] };
+                    }
+                }
+            }
+        } catch (e) {
+            console.warn("[LinearTheme] Failed to load config:", e);
+        }
+    }
+
+    saveConfig() {
+        try {
+            localStorage.setItem("linearTheme.config", JSON.stringify(this.config));
+        } catch (e) {
+            console.warn("[LinearTheme] Failed to save config:", e);
+        }
+    }
+
+    resetConfig() {
+        this.config = JSON.parse(JSON.stringify(THEME_DEFAULTS));
+        this.applyConfig();
+        this._syncInputsToConfig();
+    }
+
+    _loadPosition() {
+        try {
+            const raw = localStorage.getItem("linearTheme.panelPos");
+            return raw ? JSON.parse(raw) : null;
+        } catch { return null; }
+    }
+
+    _savePosition(x, y) {
+        try {
+            localStorage.setItem("linearTheme.panelPos", JSON.stringify({ x, y }));
+        } catch {}
+    }
+
+    _loadSections() {
+        try {
+            const raw = localStorage.getItem("linearTheme.sections");
+            return raw ? JSON.parse(raw) : { canvas: true };
+        } catch { return { canvas: true }; }
+    }
+
+    _saveSections() {
+        if (!this.panel) return;
+        const state = {};
+        this.panel.querySelectorAll(".te-section").forEach(s => {
+            state[s.dataset.section] = s.classList.contains("open");
+        });
+        try {
+            localStorage.setItem("linearTheme.sections", JSON.stringify(state));
+        } catch {}
+    }
+
+    // ── Events ──
+
+    _onInputChange(e) {
+        const el = e.target;
+        const section = el.dataset.section;
+        const key = el.dataset.key;
+        if (!section || !key) return;
+
+        if (el.type === "color") {
+            this.config[section][key] = el.value;
+            this._applySection(section);
+            this._updateModifiedState();
+        } else if (el.type === "range") {
+            const val = parseFloat(el.value);
+            this.config[section][key] = val;
+            const valSpan = el.parentElement.querySelector(".te-range-val");
+            if (valSpan) valSpan.textContent = val;
+            clearTimeout(this._rangeDebounce);
+            this._rangeDebounce = setTimeout(() => {
+                this._applySection(section);
+                this._updateModifiedState();
+            }, 30);
+            return;
+        } else if (el.type === "checkbox") {
+            this.config[section][key] = el.checked;
+            this._applySection(section);
+            this._updateModifiedState();
+        }
+    }
+
+    _applySection(section) {
+        switch (section) {
+            case "canvas": this.applyCanvas(); break;
+            case "nodes": this.applyNodes(); break;
+            case "slots": this.applySlots(); break;
+            case "ui": this.applyUI(); break;
+        }
+        this.saveConfig();
+        if (comfyApp.canvas) comfyApp.canvas.setDirty(true, true);
+    }
+
+    _syncInputsToConfig() {
+        if (!this.panel) return;
+        this.panel.querySelectorAll("[data-section][data-key]").forEach(el => {
+            const val = this.config[el.dataset.section]?.[el.dataset.key];
+            if (val === undefined) return;
+            if (el.type === "color") {
+                el.value = val;
+            } else if (el.type === "range") {
+                el.value = val;
+                const valSpan = el.parentElement.querySelector(".te-range-val");
+                if (valSpan) valSpan.textContent = val;
+            } else if (el.type === "checkbox") {
+                el.checked = val;
+            }
+        });
+        this._updateModifiedState();
+    }
+
+    _updateModifiedState() {
+        if (!this.panel) return;
+        this.panel.querySelectorAll(".te-row").forEach(row => {
+            const input = row.querySelector("[data-section][data-key]");
+            if (!input) return;
+            const section = input.dataset.section;
+            const key = input.dataset.key;
+            const current = this.config[section]?.[key];
+            const def = THEME_DEFAULTS[section]?.[key];
+            const isModified = current !== def;
+            row.classList.toggle("modified", isModified);
+        });
+    }
+
+    // ── Presets ──
+
+    _getPresets() {
+        try {
+            const raw = localStorage.getItem("linearTheme.presets");
+            return raw ? JSON.parse(raw) : [];
+        } catch { return []; }
+    }
+
+    _setPresets(presets) {
+        try {
+            localStorage.setItem("linearTheme.presets", JSON.stringify(presets));
+        } catch {}
+    }
+
+    _savePreset(name) {
+        const presets = this._getPresets();
+        const existing = presets.findIndex(p => p.name === name);
+        const entry = { name, config: JSON.parse(JSON.stringify(this.config)) };
+        if (existing >= 0) {
+            presets[existing] = entry;
+        } else {
+            presets.push(entry);
+        }
+        this._setPresets(presets);
+        this._renderPresets();
+    }
+
+    _loadPreset(name) {
+        const presets = this._getPresets();
+        const preset = presets.find(p => p.name === name);
+        if (!preset) return;
+        // Deep merge with defaults for forward-compat
+        for (const section of Object.keys(THEME_DEFAULTS)) {
+            if (preset.config[section]) {
+                this.config[section] = { ...THEME_DEFAULTS[section], ...preset.config[section] };
+            }
+        }
+        this.applyConfig();
+        this._syncInputsToConfig();
+    }
+
+    _deletePreset(name) {
+        const presets = this._getPresets().filter(p => p.name !== name);
+        this._setPresets(presets);
+        this._renderPresets();
+    }
+
+    _renderPresets() {
+        if (!this._presetListEl) return;
+        const presets = this._getPresets();
+        if (presets.length === 0) {
+            this._presetListEl.innerHTML = `<div class="te-preset-empty">No saved presets</div>`;
+            return;
+        }
+        this._presetListEl.innerHTML = presets.map(p => `
+            <div class="te-preset-item" data-preset="${p.name.replace(/"/g, '&quot;')}">
+                <span class="te-preset-item-name">${p.name.replace(/</g, '&lt;')}</span>
+                <div class="te-preset-item-btns">
+                    <button class="te-btn te-preset-del" data-preset-del="${p.name.replace(/"/g, '&quot;')}" title="Delete">✕</button>
+                </div>
+            </div>
+        `).join("");
+
+        // Click to load
+        this._presetListEl.querySelectorAll(".te-preset-item").forEach(item => {
+            item.addEventListener("click", (e) => {
+                if (e.target.closest(".te-preset-del")) return;
+                this._loadPreset(item.dataset.preset);
+            });
+        });
+
+        // Delete buttons
+        this._presetListEl.querySelectorAll(".te-preset-del").forEach(btn => {
+            btn.addEventListener("click", (e) => {
+                e.stopPropagation();
+                this._deletePreset(btn.dataset.presetDel);
+            });
+        });
+    }
+
+    // ── Drag ──
+
+    _setupDrag(panel) {
+        const header = panel.querySelector(".te-header");
+        let dragging = false, startX, startY, origX, origY;
+
+        header.addEventListener("pointerdown", (e) => {
+            if (e.target.closest(".te-btn")) return;
+            dragging = true;
+            startX = e.clientX; startY = e.clientY;
+            const rect = panel.getBoundingClientRect();
+            origX = rect.left; origY = rect.top;
+            header.setPointerCapture(e.pointerId);
+        });
+
+        header.addEventListener("pointermove", (e) => {
+            if (!dragging) return;
+            const dx = e.clientX - startX;
+            const dy = e.clientY - startY;
+            panel.style.left = (origX + dx) + "px";
+            panel.style.top = (origY + dy) + "px";
+            panel.style.right = "auto";
+        });
+
+        header.addEventListener("pointerup", (e) => {
+            if (!dragging) return;
+            dragging = false;
+            header.releasePointerCapture(e.pointerId);
+            const rect = panel.getBoundingClientRect();
+            this._savePosition(rect.left, rect.top);
+        });
+    }
+}
+
+const themeEditor = new ThemeEditor();
+
 comfyApp.registerExtension({
     name: "Comfy.LinearTheme",
     nodeCreated(node) {
         stripNodeColor(node);
+        // Lock _collapsed_width so it always respects title width
+        const titleMin = getTitleMinWidth(node);
+        let stored = node._collapsed_width || 0;
+        Object.defineProperty(node, '_collapsed_width', {
+            get() { return Math.max(stored, titleMin); },
+            set(v) { stored = v; },
+            configurable: true
+        });
     },
     loadedGraphNode(node) {
         stripNodeColor(node);
+        const titleMin = getTitleMinWidth(node);
+        let stored = node._collapsed_width || 0;
+        Object.defineProperty(node, '_collapsed_width', {
+            get() { return Math.max(stored, titleMin); },
+            set(v) { stored = v; },
+            configurable: true
+        });
     },
     async setup() {
         // Inject CSS
@@ -3259,9 +4114,22 @@ comfyApp.registerExtension({
         style.textContent = CSS;
         document.head.appendChild(style);
 
+        // Patch computeSize so nodes are always wide enough for their title
+        if (window.LGraphNode) {
+            const origComputeSize = LGraphNode.prototype.computeSize;
+            LGraphNode.prototype.computeSize = function () {
+                const size = origComputeSize.apply(this, arguments);
+                const titleMin = getTitleMinWidth(this);
+                if (size[0] < titleMin) size[0] = titleMin;
+                return size;
+            };
+        }
+
         // Apply LiteGraph canvas theme
         const canvas = comfyApp.canvas;
         if (canvas) {
+            canvas.render_connections_border = false;
+
             for (const [key, value] of Object.entries(THEME)) {
                 if (key === "SLOT_COLORS") continue;
                 if (canvas[key] !== undefined) {
@@ -3269,29 +4137,29 @@ comfyApp.registerExtension({
                 }
             }
 
-            // Replace cross grid with square dot pattern (10px spacing)
-            const tileSize = 100;
-            const dotSpacing = 10;
-            const dotCanvas = document.createElement("canvas");
-            dotCanvas.width = tileSize;
-            dotCanvas.height = tileSize;
-            const dotCtx = dotCanvas.getContext("2d");
-            dotCtx.fillStyle = "rgba(255,255,255,0.14)";
-            for (let gy = 0; gy < tileSize; gy += dotSpacing) {
-                for (let gx = 0; gx < tileSize; gx += dotSpacing) {
-                    dotCtx.fillRect(gx, gy, 1, 1);
+            // Build initial dot grid (ThemeEditor may override via applyConfig)
+            {
+                const tileSize = 100, dotSpacing = 10;
+                const dotCanvas = document.createElement("canvas");
+                dotCanvas.width = tileSize; dotCanvas.height = tileSize;
+                const dotCtx = dotCanvas.getContext("2d");
+                dotCtx.fillStyle = "rgba(255,255,255,0.14)";
+                for (let gy = 0; gy < tileSize; gy += dotSpacing) {
+                    for (let gx = 0; gx < tileSize; gx += dotSpacing) {
+                        dotCtx.fillRect(gx, gy, 1, 1);
+                    }
                 }
+                currentDotDataUrl = dotCanvas.toDataURL();
             }
-            const dotDataUrl = dotCanvas.toDataURL();
 
-            canvas.background_image = dotDataUrl;
+            canvas.background_image = currentDotDataUrl;
             canvas._pattern = null;
             canvas._pattern_img = null;
 
             // Lock BACKGROUND_IMAGE so palette loading can't overwrite it
             if (window.LiteGraph) {
                 Object.defineProperty(LiteGraph, "BACKGROUND_IMAGE", {
-                    get() { return dotDataUrl; },
+                    get() { return currentDotDataUrl; },
                     set() {},
                     configurable: true
                 });
@@ -3307,6 +4175,9 @@ comfyApp.registerExtension({
                 }
             }
         }
+
+        // Force --bg-color on body (ComfyUI palette sets its own value on body)
+        document.body.style.setProperty("--bg-color", THEME.CLEAR_BACKGROUND_COLOR);
 
         // Apply slot colors
         if (window.LiteGraph) {
@@ -3412,6 +4283,13 @@ comfyApp.registerExtension({
                                 comfyApp.canvas.setDirty(true, true);
                             }
                         },
+                        null, // separator
+                        {
+                            content: "Theme Editor",
+                            callback: () => {
+                                themeEditor.toggle();
+                            }
+                        },
                     ],
                 },
             });
@@ -3419,6 +4297,147 @@ comfyApp.registerExtension({
             return options;
         };
 
-        console.log("[LinearTheme] Theme applied — v2.3");
+        // --- Execution glow: API listeners ---
+        if (api) {
+            api.addEventListener("execution_start", () => {
+                executionState.runningNodeId = null;
+                const now = performance.now();
+                for (const id in executionState.completedNodes) {
+                    if (now - executionState.completedNodes[id] > 700) {
+                        delete executionState.completedNodes[id];
+                    }
+                }
+                executionState.errorNodes = {};
+            });
+
+            api.addEventListener("executing", (e) => {
+                const nodeId = e?.detail;
+                if (executionState.runningNodeId && executionState.runningNodeId !== nodeId) {
+                    executionState.completedNodes[executionState.runningNodeId] = performance.now();
+                    comfyApp.canvas?.setDirty(true, false);
+                }
+                executionState.runningNodeId = nodeId || null;
+                if (nodeId) {
+                    comfyApp.canvas?.setDirty(true, false);
+                }
+                if (!nodeId) {
+                    executionState.runningNodeId = null;
+                }
+            });
+
+            api.addEventListener("execution_error", (e) => {
+                const nodeId = e?.detail?.node_id;
+                if (nodeId) {
+                    executionState.errorNodes[nodeId] = performance.now();
+                    executionState.runningNodeId = null;
+                    comfyApp.canvas?.setDirty(true, false);
+                }
+            });
+        }
+
+        // --- Theme Editor: initialize & apply saved config ---
+        themeEditor.init();
+
+        // --- Fix: clamp floating actionbar within viewport ---
+        {
+            const clampActionbar = () => {
+                const ab = document.querySelector('.actionbar');
+                if (!ab || getComputedStyle(ab).position !== 'fixed') return;
+                const maxX = window.innerWidth - ab.offsetWidth - 10;
+                const maxY = window.innerHeight - ab.offsetHeight - 10;
+                const curX = parseFloat(ab.style.left) || 0;
+                const curY = parseFloat(ab.style.top) || 0;
+                if (curX > maxX) ab.style.left = maxX + 'px';
+                if (curX < 0) ab.style.left = '10px';
+                if (curY > maxY) ab.style.top = maxY + 'px';
+                if (curY < 0) ab.style.top = '10px';
+            };
+            const ab = document.querySelector('.actionbar');
+            if (ab) {
+                new MutationObserver(() => requestAnimationFrame(clampActionbar))
+                    .observe(ab, { attributes: true, attributeFilter: ['class', 'style'] });
+            }
+        }
+
+        console.log("[LinearTheme] Theme applied — v3.2 (editor + glow)");
+    },
+
+    beforeRegisterNodeDef(nodeType, nodeData) {
+        const origDrawFg = nodeType.prototype.onDrawForeground;
+
+        nodeType.prototype.onDrawForeground = function (ctx) {
+            try {
+                if (origDrawFg) origDrawFg.apply(this, arguments);
+            } catch(e) {}
+
+            const w = this.size[0];
+            const h = this.size[1];
+            const titleH = LiteGraph.NODE_TITLE_HEIGHT || 30;
+            const radius = 8;
+
+            // Cover the anti-aliasing seam between title and body
+            if (!this.flags?.collapsed) {
+                ctx.fillStyle = themeEditor?.config?.nodes?.bodyColor || "#18181b";
+                ctx.fillRect(0, -1, w, 2);
+            }
+
+            // ── Execution glow ──
+            const nodeId = this.id;
+            const now = performance.now();
+            let glowColor = null;
+            let alpha = 0;
+
+            // Running: pulsing white glow
+            if (executionState.runningNodeId == nodeId) {
+                const pulse = 0.3 + 0.2 * Math.sin(now * 0.003);
+                glowColor = `rgba(255, 255, 255, ${pulse})`;
+                alpha = pulse;
+                comfyApp.canvas?.setDirty(true, false);
+            }
+            // Completed: green flash that fades in 600ms
+            else if (executionState.completedNodes[nodeId]) {
+                const elapsed = now - executionState.completedNodes[nodeId];
+                if (elapsed < 600) {
+                    const t = 1 - elapsed / 600;
+                    alpha = 0.35 * t;
+                    glowColor = `rgba(34, 197, 94, ${alpha})`;
+                    comfyApp.canvas?.setDirty(true, false);
+                } else {
+                    delete executionState.completedNodes[nodeId];
+                }
+            }
+            // Error: red glow that fades in 1200ms
+            else if (executionState.errorNodes[nodeId]) {
+                const elapsed = now - executionState.errorNodes[nodeId];
+                if (elapsed < 1200) {
+                    const t = 1 - elapsed / 1200;
+                    alpha = 0.4 * t;
+                    glowColor = `rgba(239, 68, 68, ${alpha})`;
+                    comfyApp.canvas?.setDirty(true, false);
+                } else {
+                    delete executionState.errorNodes[nodeId];
+                }
+            }
+
+            if (glowColor && alpha > 0.01) {
+                ctx.save();
+                ctx.globalCompositeOperation = "lighter";
+                ctx.strokeStyle = glowColor;
+                ctx.lineWidth = 1.5;
+                ctx.shadowColor = glowColor;
+                ctx.shadowBlur = 20;
+                ctx.shadowOffsetX = 0;
+                ctx.shadowOffsetY = 0;
+                ctx.beginPath();
+                if (ctx.roundRect) {
+                    ctx.roundRect(0, -titleH, w, h + titleH, [radius]);
+                } else {
+                    ctx.rect(0, -titleH, w, h + titleH);
+                }
+                ctx.stroke();
+                ctx.stroke();
+                ctx.restore();
+            }
+        };
     }
 });
