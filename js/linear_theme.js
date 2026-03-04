@@ -3117,12 +3117,6 @@ function stripNodeColor(node) {
 }
 
 // Ensure node is wide enough to show full title without truncation
-function getTitleMinWidth(node) {
-    const title = node.title || "";
-    const fontSize = LiteGraph.NODE_TEXT_SIZE || 14;
-    const padding = 50; // space for collapse arrow + badges
-    return title.length * fontSize * 0.62 + padding;
-}
 
 /* ── Arrange selected nodes: straight main chain, sub-nodes below target ── */
 function arrangeSelectedNodes(selectedNodes) {
@@ -4081,28 +4075,38 @@ class ThemeEditor {
 
 const themeEditor = new ThemeEditor();
 
+// Offscreen canvas for measuring text width
+const _measureCtx = document.createElement("canvas").getContext("2d");
+
+function getCollapsedTitleWidth(node) {
+    const title = (node.getTitle ? node.getTitle() : node.title) || "";
+    const fontSize = LiteGraph.NODE_TEXT_SIZE || 14;
+    _measureCtx.font = `${fontSize}px Inter, Arial, sans-serif`;
+    const textW = _measureCtx.measureText(title).width;
+    const textX = 25;  // after collapse arrow
+    const slotR = 20;  // space for output dot
+    return textX + textW + slotR + 10;
+}
+
+function lockCollapsedWidth(node) {
+    const titleW = getCollapsedTitleWidth(node);
+    let stored = node._collapsed_width || 0;
+    Object.defineProperty(node, '_collapsed_width', {
+        get() { return Math.max(stored, titleW); },
+        set(v) { stored = v; },
+        configurable: true
+    });
+}
+
 comfyApp.registerExtension({
     name: "Comfy.LinearTheme",
     nodeCreated(node) {
         stripNodeColor(node);
-        // Lock _collapsed_width so it always respects title width
-        const titleMin = getTitleMinWidth(node);
-        let stored = node._collapsed_width || 0;
-        Object.defineProperty(node, '_collapsed_width', {
-            get() { return Math.max(stored, titleMin); },
-            set(v) { stored = v; },
-            configurable: true
-        });
+        lockCollapsedWidth(node);
     },
     loadedGraphNode(node) {
         stripNodeColor(node);
-        const titleMin = getTitleMinWidth(node);
-        let stored = node._collapsed_width || 0;
-        Object.defineProperty(node, '_collapsed_width', {
-            get() { return Math.max(stored, titleMin); },
-            set(v) { stored = v; },
-            configurable: true
-        });
+        lockCollapsedWidth(node);
     },
     async setup() {
         // Inject CSS
@@ -4113,17 +4117,6 @@ comfyApp.registerExtension({
         style.id = "linear-theme-css";
         style.textContent = CSS;
         document.head.appendChild(style);
-
-        // Patch computeSize so nodes are always wide enough for their title
-        if (window.LGraphNode) {
-            const origComputeSize = LGraphNode.prototype.computeSize;
-            LGraphNode.prototype.computeSize = function () {
-                const size = origComputeSize.apply(this, arguments);
-                const titleMin = getTitleMinWidth(this);
-                if (size[0] < titleMin) size[0] = titleMin;
-                return size;
-            };
-        }
 
         // Apply LiteGraph canvas theme
         const canvas = comfyApp.canvas;
@@ -4380,6 +4373,42 @@ comfyApp.registerExtension({
                 ctx.fillStyle = themeEditor?.config?.nodes?.bodyColor || "#18181b";
                 ctx.fillRect(0, -1, w, 2);
             }
+
+            // ── Collapsed: redraw title area (LiteGraph clips text to old width) ──
+            if (this.flags?.collapsed) {
+                const titleText = this.getTitle ? this.getTitle() : this.title;
+                if (titleText) {
+                    ctx.save();
+                    const fontSize = LiteGraph.NODE_TEXT_SIZE || 14;
+                    const collW = this._collapsed_width || w;
+                    const titleColor = themeEditor?.config?.nodes?.titleColor || "#18181b";
+                    const r = 8;
+                    const arrowEnd = 22; // after collapse arrow circle
+                    const textX = 25;
+
+                    // 1. Cover LiteGraph's clipped title (after the collapse arrow)
+                    ctx.fillStyle = titleColor;
+                    ctx.beginPath();
+                    ctx.moveTo(arrowEnd, -titleH);
+                    ctx.lineTo(collW - r, -titleH);
+                    ctx.arcTo(collW, -titleH, collW, -titleH + r, r);
+                    ctx.lineTo(collW, -r);
+                    ctx.arcTo(collW, 0, collW - r, 0, r);
+                    ctx.lineTo(arrowEnd, 0);
+                    ctx.closePath();
+                    ctx.fill();
+
+                    // 2. Draw full title text
+                    ctx.font = `${fontSize}px Inter, Arial, sans-serif`;
+                    ctx.fillStyle = "#e4e4e7";
+                    ctx.textAlign = "left";
+                    ctx.textBaseline = "middle";
+                    ctx.fillText(titleText, textX, -titleH * 0.5);
+
+                    ctx.restore();
+                }
+            }
+
 
             // ── Execution glow ──
             const nodeId = this.id;
