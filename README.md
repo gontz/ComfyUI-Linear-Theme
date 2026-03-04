@@ -4,12 +4,17 @@ A dark, minimal theme for ComfyUI inspired by [Linear](https://linear.app), [Ver
 
 Pure black canvas, glassmorphism bars, no shadows. Every pixel is intentional.
 
+![General view](screenshots/general.png)
+
+![Nodes close-up](screenshots/nodes-closeup.png)
+
 ## Features
 
 - **Full CSS overhaul** — nodes, widgets, sidebars, dialogs, menus, buttons, inputs, scrollbars, tooltips, and more
 - **Glassmorphism UI** — top bar, bottom toolbar, sidebar, and floating panels with backdrop blur
 - **Theme Editor** — right-click → Linear Theme → Theme Editor to customize everything in real time
 - **Execution glow** — running nodes pulse white, completed flash green, errors flash red
+- **Collapsed titles** — full title always visible on collapsed nodes
 - **Dot grid background** — clean minimal canvas grid
 - **Color palette** for LiteGraph canvas — nodes, links, slots
 - Loads automatically as a custom node extension
@@ -17,6 +22,8 @@ Pure black canvas, glassmorphism bars, no shadows. Every pixel is intentional.
 ## Theme Editor
 
 Built-in floating panel to tweak the theme live:
+
+![Theme Editor](screenshots/theme-editor.jpeg)
 
 - **Canvas** — background color, dot grid opacity, node radius, connection width
 - **Nodes** — body, title, shadow, outline, widget colors
