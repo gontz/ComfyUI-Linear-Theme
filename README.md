@@ -8,10 +8,16 @@ Pure black canvas, glassmorphism bars, no shadows. Every pixel is intentional.
 
 ![Nodes close-up](screenshots/nodes-closeup.png)
 
+<p>
+  <img src="screenshots/context-menu.png" width="280">
+  <img src="screenshots/glassmorphism.png" width="60">
+</p>
+
 ## Features
 
 - **Full CSS overhaul** — nodes, widgets, sidebars, dialogs, menus, buttons, inputs, scrollbars, tooltips, and more
 - **Glassmorphism UI** — top bar, bottom toolbar, sidebar, and floating panels with backdrop blur
+- **Context menu** — styled with rounded corners, separators, and hover effects
 - **Theme Editor** — right-click → Linear Theme → Theme Editor to customize everything in real time
 - **Execution glow** — running nodes pulse white, completed flash green, errors flash red
 - **Collapsed titles** — full title always visible on collapsed nodes
