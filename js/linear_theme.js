@@ -3438,7 +3438,7 @@ const THEME_EDITOR_CSS = `
 const THEME_DEFAULTS = {
     canvas: {
         backgroundColor: "#000000",
-        dotGridOpacity: 0.2,
+        dotGridOpacity: 0.5,
         nodeBorderRadius: 10,
         connectionWidth: 1.5,
     },
@@ -3563,10 +3563,10 @@ class ThemeEditor {
         this._rangeDebounce = null;
     }
 
-    init() {
+    async init() {
         this._injectCSS();
         this._createPanel();
-        this._loadConfig();
+        await this._loadConfig();
         this._syncInputsToConfig();
         this.applyConfig();
         this._renderPresets();
@@ -3824,14 +3824,16 @@ class ThemeEditor {
 
     // ── Persistence ──
 
-    _loadConfig() {
+    async _loadConfig() {
         try {
-            const raw = localStorage.getItem("linearTheme.config");
-            if (raw) {
-                const saved = JSON.parse(raw);
-                for (const section of Object.keys(THEME_DEFAULTS)) {
-                    if (saved[section]) {
-                        this.config[section] = { ...THEME_DEFAULTS[section], ...saved[section] };
+            const resp = await fetch("/linear-theme/config");
+            if (resp.ok) {
+                const saved = await resp.json();
+                if (saved && Object.keys(saved).length > 0) {
+                    for (const section of Object.keys(THEME_DEFAULTS)) {
+                        if (saved[section]) {
+                            this.config[section] = { ...THEME_DEFAULTS[section], ...saved[section] };
+                        }
                     }
                 }
             }
@@ -3842,7 +3844,11 @@ class ThemeEditor {
 
     saveConfig() {
         try {
-            localStorage.setItem("linearTheme.config", JSON.stringify(this.config));
+            fetch("/linear-theme/config", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(this.config)
+            });
         } catch (e) {
             console.warn("[LinearTheme] Failed to save config:", e);
         }
@@ -4136,7 +4142,7 @@ comfyApp.registerExtension({
                 const dotCanvas = document.createElement("canvas");
                 dotCanvas.width = tileSize; dotCanvas.height = tileSize;
                 const dotCtx = dotCanvas.getContext("2d");
-                dotCtx.fillStyle = "rgba(255,255,255,0.14)";
+                dotCtx.fillStyle = "rgba(255,255,255,0.5)";
                 for (let gy = 0; gy < tileSize; gy += dotSpacing) {
                     for (let gx = 0; gx < tileSize; gx += dotSpacing) {
                         dotCtx.fillRect(gx, gy, 1, 1);
@@ -4329,7 +4335,7 @@ comfyApp.registerExtension({
         }
 
         // --- Theme Editor: initialize & apply saved config ---
-        themeEditor.init();
+        await themeEditor.init();
 
         // --- Fix: clamp floating actionbar within viewport ---
         {
