@@ -4354,6 +4354,22 @@ comfyApp.registerExtension({
             }
         }
 
+        // Hide slot dots on collapsed nodes (LiteGraph draws them after onDrawForeground)
+        const origDrawNode = LGraphCanvas.prototype.drawNode;
+        LGraphCanvas.prototype.drawNode = function(node, ctx) {
+            if (node.flags?.collapsed) {
+                const savedInputs = node.inputs;
+                const savedOutputs = node.outputs;
+                node.inputs = [];
+                node.outputs = [];
+                const result = origDrawNode.call(this, node, ctx);
+                node.inputs = savedInputs;
+                node.outputs = savedOutputs;
+                return result;
+            }
+            return origDrawNode.call(this, node, ctx);
+        };
+
         // Override group rendering with Linear-style groups
         installGroupOverride();
 
