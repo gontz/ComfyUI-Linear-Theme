@@ -4604,10 +4604,10 @@ comfyApp.registerExtension({
             let glowColor = null;
             let alpha = 0;
 
-            // Running: pulsing white glow
+            // Running: pulsing accent glow
             if (executionState.runningNodeId == nodeId) {
-                const pulse = 0.3 + 0.2 * Math.sin(now * 0.003);
-                glowColor = `rgba(255, 255, 255, ${pulse})`;
+                const pulse = 0.15 + 0.1 * Math.sin(now * 0.004);
+                glowColor = `rgba(168, 162, 255, ${pulse})`;
                 alpha = pulse;
                 comfyApp.canvas?.setDirty(true, false);
             }
@@ -4642,16 +4642,32 @@ comfyApp.registerExtension({
                 ctx.strokeStyle = glowColor;
                 ctx.lineWidth = 1.5;
                 ctx.shadowColor = glowColor;
-                ctx.shadowBlur = 20;
+                ctx.shadowBlur = 12;
                 ctx.shadowOffsetX = 0;
                 ctx.shadowOffsetY = 0;
+
+                let gx, gy, gw, gh, gr;
+                if (this.flags?.collapsed) {
+                    const collW = this._collapsed_width || w;
+                    gx = 0;
+                    gy = -titleH;
+                    gw = collW;
+                    gh = titleH;
+                    gr = titleH * 0.5; // pill shape
+                } else {
+                    gx = 0;
+                    gy = -titleH;
+                    gw = w;
+                    gh = h + titleH;
+                    gr = radius;
+                }
+
                 ctx.beginPath();
                 if (ctx.roundRect) {
-                    ctx.roundRect(0, -titleH, w, h + titleH, [radius]);
+                    ctx.roundRect(gx, gy, gw, gh, [gr]);
                 } else {
-                    ctx.rect(0, -titleH, w, h + titleH);
+                    ctx.rect(gx, gy, gw, gh);
                 }
-                ctx.stroke();
                 ctx.stroke();
                 ctx.restore();
             }
