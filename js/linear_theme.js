@@ -4089,16 +4089,57 @@ function getCollapsedTitleWidth(node) {
     const fontSize = LiteGraph.NODE_TEXT_SIZE || 14;
     _measureCtx.font = `${fontSize}px Inter, Arial, sans-serif`;
     const textW = _measureCtx.measureText(title).width;
-    const textX = 25;  // after collapse arrow
+    const textX = 20;  // after collapse arrow
     const slotR = 20;  // space for output dot
     return textX + textW + slotR + 10;
 }
 
+function enforceTitleMinWidth(node) {
+    const fontSize = LiteGraph.NODE_TEXT_SIZE || 14;
+    const titleH = LiteGraph.NODE_TITLE_HEIGHT || 30;
+
+    function getMinW() {
+        const title = (node.getTitle ? node.getTitle() : node.title) || "";
+        _measureCtx.font = `${fontSize}px Inter, Arial, sans-serif`;
+        return _measureCtx.measureText(title).width + titleH * 2 + 4;
+    }
+
+    // Intercept _size (used by renderingSize getter) to clamp width & snap to grid
+    const GRID = 10;
+    function snap(w) { return Math.ceil(w / GRID) * GRID; }
+
+    let _sizeVal = node._size;
+    if (!node.flags?.collapsed) _sizeVal[0] = snap(Math.max(_sizeVal[0], getMinW()));
+    Object.defineProperty(node, '_size', {
+        get() {
+            if (!node.flags?.collapsed) {
+                const minW = getMinW();
+                if (_sizeVal[0] < minW) _sizeVal[0] = snap(minW);
+                else _sizeVal[0] = snap(_sizeVal[0]);
+                _sizeVal[1] = snap(_sizeVal[1]);
+            }
+            return _sizeVal;
+        },
+        set(v) {
+            _sizeVal = v;
+            if (!node.flags?.collapsed) {
+                const minW = getMinW();
+                if (_sizeVal[0] < minW) _sizeVal[0] = snap(minW);
+                else _sizeVal[0] = snap(_sizeVal[0]);
+                _sizeVal[1] = snap(_sizeVal[1]);
+            }
+        },
+        configurable: true
+    });
+}
+
 function lockCollapsedWidth(node) {
+    const GRID = 10;
+    function snap(w) { return Math.ceil(w / GRID) * GRID; }
     const titleW = getCollapsedTitleWidth(node);
     let stored = node._collapsed_width || 0;
     Object.defineProperty(node, '_collapsed_width', {
-        get() { return Math.max(stored, titleW); },
+        get() { return snap(Math.max(stored, titleW)); },
         set(v) { stored = v; },
         configurable: true
     });
@@ -4154,7 +4195,7 @@ function installGroupOverride() {
             const accentRgb = _hexToRgb(palette.accent);
 
             const x = pos[0], y = pos[1], w = size[0], h = size[1];
-            const titleH = 34, r = 10, lineW = 1.5 / scale;
+            const titleH = 34, r = 10, lineW = 1.5;
 
             // ── Clipped region ──
             ctx.save();
@@ -4217,12 +4258,12 @@ function installGroupOverride() {
             ctx.moveTo(x, y + titleH);
             ctx.lineTo(x + w, y + titleH);
             ctx.strokeStyle = `rgba(${accentRgb.r}, ${accentRgb.g}, ${accentRgb.b}, 0.2)`;
-            ctx.lineWidth = 1 / scale;
+            ctx.lineWidth = 1;
             ctx.stroke();
 
             // Left accent bar
             ctx.fillStyle = `rgba(${accentRgb.r}, ${accentRgb.g}, ${accentRgb.b}, 0.6)`;
-            ctx.fillRect(x, y, 3 / scale, titleH);
+            ctx.fillRect(x, y, 3, titleH);
 
             ctx.restore(); // end clip
 
@@ -4238,11 +4279,11 @@ function installGroupOverride() {
             ctx.moveTo(x + r, y);
             ctx.lineTo(x + w - r, y);
             ctx.strokeStyle = 'rgba(255,255,255,0.06)';
-            ctx.lineWidth = 1 / scale;
+            ctx.lineWidth = 1;
             ctx.stroke();
 
             // ── Color dot badge with LED glow ──
-            const dotR = 4 / scale;
+            const dotR = 4;
             const dotX = x + 14, dotY = y + titleH / 2;
 
             const outerGlow = ctx.createRadialGradient(dotX, dotY, 0, dotX, dotY, dotR * 4);
@@ -4260,7 +4301,7 @@ function installGroupOverride() {
             ctx.fill();
 
             ctx.beginPath();
-            ctx.arc(dotX - 1/scale, dotY - 1/scale, dotR * 0.4, 0, Math.PI * 2);
+            ctx.arc(dotX - 1, dotY - 1, dotR * 0.4, 0, Math.PI * 2);
             ctx.fillStyle = 'rgba(255,255,255,0.4)';
             ctx.fill();
 
@@ -4287,10 +4328,12 @@ comfyApp.registerExtension({
     name: "Comfy.LinearTheme",
     nodeCreated(node) {
         stripNodeColor(node);
+        enforceTitleMinWidth(node);
         lockCollapsedWidth(node);
     },
     loadedGraphNode(node) {
         stripNodeColor(node);
+        enforceTitleMinWidth(node);
         lockCollapsedWidth(node);
     },
     async setup() {
@@ -4354,12 +4397,14 @@ comfyApp.registerExtension({
             }
         }
 
-        // Hide slot dots on collapsed nodes (LiteGraph draws them after onDrawForeground)
+        // Hide LiteGraph slot dots on collapsed nodes & store real slots for themed drawing
         const origDrawNode = LGraphCanvas.prototype.drawNode;
         LGraphCanvas.prototype.drawNode = function(node, ctx) {
             if (node.flags?.collapsed) {
                 const savedInputs = node.inputs;
                 const savedOutputs = node.outputs;
+                node._realInputs = savedInputs;
+                node._realOutputs = savedOutputs;
                 node.inputs = [];
                 node.outputs = [];
                 const result = origDrawNode.call(this, node, ctx);
@@ -4591,23 +4636,53 @@ comfyApp.registerExtension({
                     const isMuted = this.mode === 2;
                     const titleColor = isBypassed ? "#4a2060" : isMuted ? "#2a2a2a" : normalTitleColor;
                     const textColor = isBypassed ? "#e8d5f5" : isMuted ? "#666666" : "#e4e4e7";
-                    const r = titleH * 0.5; // pill radius
-                    const textX = 25;
+                    const r = 10; // match group border radius
+                    const textX = 20;
 
                     // Force full opacity (LiteGraph reduces globalAlpha for bypass/mute)
                     const prevAlpha = ctx.globalAlpha;
                     ctx.globalAlpha = 1;
 
-                    // 1. Cover entire collapsed pill (overwrite LiteGraph's text)
+                    // 1. Cover entire collapsed pill (overwrite LiteGraph's shape + text)
+                    // Extend 2px to fully cover LiteGraph's bypass/mute shape
                     ctx.fillStyle = titleColor;
                     ctx.beginPath();
                     ctx.roundRect(0, -titleH, collW, titleH, r);
                     ctx.fill();
 
-                    // 2. Redraw collapse arrow dot (match expanded node style)
+                    // 2. Collapse dot — colored by connected input(s), white if none
+                    const canvas = comfyApp.canvas;
+                    const byType = canvas?.default_connection_color_byType || {};
+                    const fallbackColor = canvas?.default_connection_color?.output_on || "#aaa";
+                    const centerY = -titleH * 0.5;
+                    const realInputs = this._realInputs || this.inputs || [];
+                    const realOutputs = this._realOutputs || this.outputs || [];
+
+                    const connectedInputs = realInputs.filter(i => i.link != null);
+                    let dotColor;
+                    if (isBypassed) {
+                        dotColor = "#c090e0";
+                    } else if (isMuted) {
+                        dotColor = "#555";
+                    } else if (connectedInputs.length === 0) {
+                        dotColor = "#e4e4e7";
+                    } else if (connectedInputs.length === 1) {
+                        dotColor = byType[connectedInputs[0].type] || fallbackColor;
+                    } else {
+                        // Blend connected input colors
+                        let rr = 0, gg = 0, bb = 0;
+                        connectedInputs.forEach(inp => {
+                            const hex = (byType[inp.type] || fallbackColor).replace("#", "");
+                            rr += parseInt(hex.substring(0, 2), 16);
+                            gg += parseInt(hex.substring(2, 4), 16);
+                            bb += parseInt(hex.substring(4, 6), 16);
+                        });
+                        const n = connectedInputs.length;
+                        dotColor = `rgb(${Math.round(rr/n)},${Math.round(gg/n)},${Math.round(bb/n)})`;
+                    }
                     ctx.beginPath();
-                    ctx.arc(10, -titleH * 0.5, 5, 0, Math.PI * 2);
-                    ctx.fillStyle = isBypassed ? "#c090e0" : isMuted ? "#555" : "#e4e4e7";
+                    ctx.arc(12, centerY, 5, 0, Math.PI * 2);
+                    ctx.fillStyle = dotColor;
                     ctx.fill();
 
                     // 3. Draw full title text
@@ -4615,7 +4690,17 @@ comfyApp.registerExtension({
                     ctx.fillStyle = textColor;
                     ctx.textAlign = "left";
                     ctx.textBaseline = "middle";
-                    ctx.fillText(titleText, textX, -titleH * 0.5);
+                    ctx.fillText(titleText, textX, centerY);
+
+                    // 4. Output: small rounded tick inside pill, right edge
+                    realOutputs.forEach(out => {
+                        if (out.links?.length > 0) {
+                            ctx.fillStyle = byType[out.type] || fallbackColor;
+                            ctx.beginPath();
+                            ctx.roundRect(collW - 6, centerY - 5, 3, 10, 1.5);
+                            ctx.fill();
+                        }
+                    });
 
                     ctx.globalAlpha = prevAlpha;
 
