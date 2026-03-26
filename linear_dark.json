@@ -27,15 +27,15 @@
       "SAMPLING": "#60A5FA"
     },
     "litegraph_base": {
-      "BACKGROUND_IMAGE": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAAAdUlEQVR4nO3XQQ3AMADEsHIZf4wdhb2mk2K/QyDn3vucD3T/dAAAANStn2utAwAAoG79XGsdAAAAdevnWusAAACoWz/XWgcAAEDd+rnWOgAAAOrWz7XWAQAAULd+rrUOAACAuvVzrXUAAADUrZ9rrQMAACDuBQ6pOJD0qit8AAAAAElFTkSuQmCC",
-      "CLEAR_BACKGROUND_COLOR": "#000000",
+      "BACKGROUND_IMAGE": "",
+      "CLEAR_BACKGROUND_COLOR": "#0d0d0d",
       "NODE_TITLE_COLOR": "#ffffff",
       "NODE_SELECTED_TITLE_COLOR": "#ffffff",
       "NODE_TEXT_SIZE": 14,
       "NODE_TEXT_COLOR": "#ffffff",
       "NODE_SUBTEXT_SIZE": 12,
-      "NODE_DEFAULT_COLOR": "#141414",
-      "NODE_DEFAULT_BGCOLOR": "#141414",
+      "NODE_DEFAULT_COLOR": "#1a1a1a",
+      "NODE_DEFAULT_BGCOLOR": "#1a1a1a",
       "NODE_DEFAULT_BOXCOLOR": "#ffffff",
       "NODE_DEFAULT_SHAPE": 2,
       "NODE_BOX_OUTLINE_COLOR": "#ffffff",
@@ -43,27 +43,27 @@
       "NODE_ERROR_COLOUR": "#ef4444",
       "DEFAULT_SHADOW_COLOR": "rgba(0,0,0,0.15)",
       "DEFAULT_GROUP_FONT": 24,
-      "WIDGET_BGCOLOR": "#141414",
-      "WIDGET_OUTLINE_COLOR": "#141414",
+      "WIDGET_BGCOLOR": "#1a1a1a",
+      "WIDGET_OUTLINE_COLOR": "#1a1a1a",
       "WIDGET_TEXT_COLOR": "#ffffff",
-      "WIDGET_SECONDARY_TEXT_COLOR": "#a1a1aa",
+      "WIDGET_SECONDARY_TEXT_COLOR": "#b0b0b0",
       "LINK_COLOR": "#52525b",
       "EVENT_LINK_COLOR": "#a8a29e",
-      "CONNECTING_LINK_COLOR": "#a1a1aa"
+      "CONNECTING_LINK_COLOR": "#b0b0b0"
     },
     "comfy_base": {
       "fg-color": "#ffffff",
-      "bg-color": "#000000",
-      "comfy-menu-bg": "rgba(0,0,0,0.82)",
-      "comfy-input-bg": "#141414",
+      "bg-color": "#0d0d0d",
+      "comfy-menu-bg": "rgba(26,26,26,0.3)",
+      "comfy-input-bg": "#1a1a1a",
       "input-text": "#ffffff",
       "descrip-text": "#71717a",
-      "drag-text": "#a1a1aa",
+      "drag-text": "#b0b0b0",
       "error-text": "#ef4444",
       "border-color": "#1e1e22",
-      "tr-even-bg-color": "rgba(20,20,20,0.9)",
-      "tr-odd-bg-color": "rgba(12,12,12,0.9)",
-      "comfy-menu-secondary-bg": "rgba(10,10,10,0.82)"
+      "tr-even-bg-color": "rgba(26,26,26,0.9)",
+      "tr-odd-bg-color": "rgba(13,13,13,0.9)",
+      "comfy-menu-secondary-bg": "rgba(26,26,26,0.3)"
     }
   }
 }
