@@ -2,7 +2,7 @@
 
 A premium dark theme for ComfyUI. Pure black aesthetic, FPS-optimized, fully customizable.
 
-Inspired by Linear, Vercel, and Raycast.
+Mainly inspired by the Freepik Spaces canvas, with touches of Linear, Vercel, and Raycast.
 
 ![Canvas](screenshots/01-canvas.png)
 
