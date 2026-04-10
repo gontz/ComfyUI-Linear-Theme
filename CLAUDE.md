@@ -5,8 +5,8 @@
 - Injected via `comfyApp.registerExtension()` → `setup()`
 - CSS is a template literal string injected as a `<style>` element
 - LiteGraph canvas properties set programmatically in JS
-- Sync target: `C:\Users\agstn\Documents\ComfyUI\custom_nodes\comfyui-linear-theme\js\linear_theme.js`
-- Version: 2.0.0
+- Sync target: `<your-comfyui-path>/custom_nodes/comfyui-linear-theme/js/linear_theme.js`
+- Version: 2.0.2
 
 ## KNOWN BUGS — DO NOT RE-INTRODUCE
 
