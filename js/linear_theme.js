@@ -400,7 +400,7 @@ input::placeholder, textarea::placeholder { color: var(--input-placeholder) !imp
 .p-menuitem .p-menuitem-icon { color: var(--linear-text-muted) !important; }
 
 /* Litegraph context menu */
-.litegraph.litecontextmenu, .litegraph.litecontextmenu.dark { background: #111113 !important; border: 1px solid var(--linear-border) !important; border-radius: 10px !important; color: var(--linear-text-primary) !important; font-family: 'Inter', Arial, sans-serif !important; overflow: hidden !important; z-index: 9999 !important; padding: 4px !important; }
+.litegraph.litecontextmenu, .litegraph.litecontextmenu.dark { background: #111113 !important; border: 1px solid var(--linear-border) !important; border-radius: 10px !important; color: var(--linear-text-primary) !important; font-family: 'Inter', Arial, sans-serif !important; overflow-y: auto !important; overflow-x: hidden !important; overscroll-behavior: contain !important; z-index: 9999 !important; padding: 4px !important; }
 .litegraph .litemenu-entry, .litemenu-title { font-family: 'Inter', Arial, sans-serif !important; color: var(--linear-text-secondary) !important; padding: 5px 10px !important; border-radius: 5px !important; margin: 1px 0 !important; }
 .litegraph .litemenu-entry:hover:not(.disabled):not(.separator) { background: rgba(244,244,245,0.05) !important; color: #f4f4f5 !important; }
 .litegraph .litemenu-entry.separator { border-top: 1px solid var(--linear-border) !important; height: 0px !important; margin: 4px 8px !important; padding: 0 !important; background: transparent !important; }
